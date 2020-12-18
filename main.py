@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 from settings import *
+from player import Player
 
 
 if __name__ == "__main__":
@@ -9,7 +10,7 @@ if __name__ == "__main__":
     pygame.display.set_caption('Dungeon menu')
     window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
     background = pygame.Surface(((WIDTH, HEIGHT)))
-    background.fill(pygame.Color('#000000'))
+    background.fill(BLACK)
     manager = pygame_gui.UIManager(((WIDTH, HEIGHT)))
 
     play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((409, 278), (487, 134)), text="Start", manager=manager)
@@ -31,12 +32,14 @@ if __name__ == "__main__":
 
             manager.process_events(event)
 
-     manager.update(time_delta)
+        manager.update(time_delta)
 
-     window_surface.blit(background, (0, 0))
-     manager.draw_ui(window_surface)
+        window_surface.blit(background, (0, 0))
+        manager.draw_ui(window_surface)
 
-     pygame.display.update()
+        pygame.display.update()
+        clock.tick(144)
+    
     
     if game_running:
         pass
