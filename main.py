@@ -8,12 +8,17 @@ if __name__ == "__main__":
     pygame.init()
 
     pygame.display.set_caption('Dungeon menu')
-    window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
+    menu_surface = pygame.display.set_mode((WIDTH, HEIGHT))
     background = pygame.Surface(((WIDTH, HEIGHT)))
     background.fill(BLACK)
-    manager = pygame_gui.UIManager(((WIDTH, HEIGHT)))
+    pygame.draw.line(background, (128, 128, 128), (0, 100), (WIDTH, 100), 150)
+    pygame.draw.line(background, (128, 128, 128), (400, 100), (500, HEIGHT), 150)
+    pygame.draw.line(background, (128, 128, 128), (900, 100), (800, HEIGHT), 150)
+    main = pygame_gui.UIManager(((WIDTH, HEIGHT)))
 
-    play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((409, 278), (487, 134)), text="Start", manager=manager)
+    play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((409, 278), (487, 134)), text="Start", manager=main)
+    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1050, 600), (230, 110)), text="sound", manager=main)
+    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1, 600), (230, 110)), text="settings", manager=main)
 
     clock = pygame.time.Clock()
     running = True
@@ -29,13 +34,15 @@ if __name__ == "__main__":
                     if event.ui_element == play_button:
                         running = False
                         game_running = True
+                    if event.ui_element == sound_button:
+                        pass
 
-            manager.process_events(event)
+            main.process_events(event)
 
-        manager.update(time_delta)
+        main.update(time_delta)
 
-        window_surface.blit(background, (0, 0))
-        manager.draw_ui(window_surface)
+        menu_surface.blit(background, (0, 0))
+        main.draw_ui(menu_surface)
 
         pygame.display.update()
         clock.tick(144)
