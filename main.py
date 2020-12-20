@@ -14,10 +14,10 @@ if __name__ == "__main__":
     pygame.draw.line(background, (128, 128, 128), (0, 100), (WIDTH, 100), 150)
     pygame.draw.line(background, (128, 128, 128), (400, 100), (500, HEIGHT), 150)
     pygame.draw.line(background, (128, 128, 128), (900, 100), (800, HEIGHT), 150)
-    main = pygame_gui.UIManager(((WIDTH, HEIGHT)))
+    main = pygame_gui.UIManager((WIDTH, HEIGHT), "theme.json")
 
     play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((409, 278), (487, 134)), text="Start", manager=main)
-    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1050, 600), (230, 110)), text="sound", manager=main)
+    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1050, 600), (230, 110)), text="", manager=main)
     settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1, 600), (230, 110)), text="settings", manager=main)
 
     clock = pygame.time.Clock()
