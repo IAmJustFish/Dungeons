@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((409, 278), (487, 134)), text="Start", manager=main)
     sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1050, 600), (230, 110)), text="sound", manager=main)
-    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1, 600), (230, 110)), text="settings", manager=main)
+    settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1, 600), (230, 110)), text="settings", manager=main)
 
     clock = pygame.time.Clock()
     running = True
@@ -35,6 +35,8 @@ if __name__ == "__main__":
                         running = False
                         game_running = True
                     if event.ui_element == sound_button:
+                        pass
+                    if event.ui_element == settings_button:
                         pass
 
             main.process_events(event)
