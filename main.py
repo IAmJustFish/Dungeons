@@ -3,7 +3,7 @@ import pygame_gui
 import math
 from settings import *
 from player import Player
-from map import world_map
+from map import *
 from ray_casting import ray_casting
 
 
@@ -56,6 +56,8 @@ if __name__ == "__main__":
     if game_running:
         game_surface = pygame.display.set_mode((WIDTH, HEIGHT))
         player = Player()
+        f1 = pygame.font.Font(None, 100)
+        SHOW_FPS = True
 
         while game_running:
             for event in pygame.event.get():
@@ -64,18 +66,22 @@ if __name__ == "__main__":
             player.movement()
             game_surface.fill(BLACK)
 
-            pygame.draw.rect(game_surface, RED, (0, 0, WIDTH, HALF_HEIGHT))
+            pygame.draw.rect(game_surface, BLACK, (0, 0, WIDTH, HALF_HEIGHT))
             pygame.draw.rect(game_surface, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
 
             ray_casting(game_surface, player.pos, player.angle)
 
-            #pygame.draw.circle(game_surface, GREEN, (int(player.x), int(player.y)), 12)
-            #pygame.draw.line(game_surface, GREEN, player.pos, (player.x + WIDTH * math.cos(player.angle), player.y + WIDTH * math. sin(player.angle)), 2)
-            #for x,y in world_map:
-            #    pygame.draw.rect(game_surface, DARKGRAY, (x, y, TILE, TILE), 2)
+            pygame.draw.circle(game_surface, GREEN, (int(player.x), int(player.y)), 12)
+            pygame.draw.line(game_surface, GREEN, player.pos, (player.x + WIDTH * math.cos(player.angle), player.y + WIDTH * math. sin(player.angle)), 2)
+            for x,y in world_map:
+                pygame.draw.rect(game_surface, DARKGRAY, (x, y, TILE, TILE), 2)
+
+            if SHOW_FPS:
+                text1 = f1.render(str(int(clock.get_fps())), True,
+                                  (180, 0, 0))
+                game_surface.blit(text1, (110, 80))
 
             pygame.display.flip()
             clock.tick(144)
-            print(clock.get_fps())
     
 pygame.quit()

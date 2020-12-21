@@ -1,6 +1,7 @@
 import math
 
 TILE = 100
+SHOW_FPS = False
 
 # resolution
 WIDTH = 1280
@@ -25,7 +26,7 @@ player_speed = 2
 # ray casting settings
 FOV = math.pi / 3
 HALF_FOV = FOV / 2
-NUM_RAYS = 120
+NUM_RAYS = 128
 MAX_DEPTH = 800
 DELTA_ANGLE = FOV / NUM_RAYS
 DIST = NUM_RAYS / (2 * math.tan(HALF_FOV))
