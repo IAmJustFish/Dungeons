@@ -4,7 +4,7 @@ from settings import *
 
 
 class Player:
-    def __init__(self, player_pos):
+    def __init__(self):
         self.x, self.y = player_pos
         self.angle = player_angle
 
@@ -29,6 +29,6 @@ class Player:
             self.x += -player_speed * sin_a
             self.y += player_speed * cos_a
         if keys[pygame.K_LEFT]:
-            self.angle -= 0.08
+            self.angle -= 0.03
         if keys[pygame.K_RIGHT]:
-            self.angle += 0.08
+            self.angle += 0.03
