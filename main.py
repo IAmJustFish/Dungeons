@@ -67,9 +67,6 @@ if __name__ == "__main__":
             player.movement()
             drawer.draw_all(game_surface, player, FPS=clock.get_fps())
 
-            for x, y in world_map:
-                pygame.draw.rect(game_surface, DARKGRAY, (x, y, TILE, TILE), 2)
-
             pygame.display.flip()
             clock.tick(144)
 

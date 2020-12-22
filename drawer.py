@@ -1,4 +1,5 @@
 import pygame
+import os
 from settings import *
 from map import *
 from ray_casting import ray_casting
@@ -6,12 +7,12 @@ from ray_casting import ray_casting
 
 class Drawer:
     def __init__(self):
-        pass
+        self.textures = {'W' : os.path.join('data', "wall.png")}
 
     def draw_all(self, screen, player, FPS=-1):
         screen.fill(BLACK)
         self.draw_ground_and_sky(screen)
-        ray_casting(screen, player.pos, player.angle)
+        ray_casting(screen, player.pos, player.angle, self.textures)
         if DRAW_MINI_MAP:
             self.draw_mini_map(screen, player)
         if FPS >= 0:
