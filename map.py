@@ -1,18 +1,20 @@
 from settings import *
 
 text_map = [
-    'WWWWWWWWWWWW',
-    'WW.........W',
-    'W....W.....W',
-    'W..........W',
-    'W...W..W...W',
-    'W...W...W..W',
-    'WW..W....W.W',
-    'WWWWWWWWWWWW'
+    'W1 W1 W1 W1 W1 W1 W1 W1 W1 W1 W1 W1',
+    'W1 W1 .. .. .. .. .. .. .. .. .. W1',
+    'W1 .. .. .. .. W1 .. .. .. .. .. W1',
+    'W1 .. .. .. .. .. .. .. .. .. .. W1',
+    'W1 .. .. .. W1 .. .. W1 .. .. .. W1',
+    'W1 .. .. .. W1 .. .. .. W1 .. .. W1',
+    'W1 W1 .. .. W1 .. .. .. .. W1 .. W1',
+    'W1 W1 W1 W1 W1 W1 W1 W1 W1 W1 W1 W1'
 ]
+text_map = [i.split() for i in text_map]
 
-world_map = set()
-for j, row in enumerate(text_map[:-1]):
+world_map = {}
+for j, row in enumerate(text_map):
     for i, char in enumerate(row):
-        if char == 'W':
-            world_map.add((i * TILE, j * TILE))
+        if char != '.':
+            if char == 'W1':
+                world_map[(i * TILE, j * TILE)] = 'W1'

@@ -1,7 +1,7 @@
 import pygame
 import math
 from settings import *
-from map import text_map
+from map import world_map, text_map
 
 
 class Player:
@@ -15,7 +15,8 @@ class Player:
 
     def is_empty(self, x, y):
         xt, yt = int(x // TILE), int(y // TILE)
-        return not text_map[yt][xt] == "W"
+        vals = list(set(world_map.values()))
+        return not text_map[yt][xt] in vals
 
     def movement(self):
         sin_a = math.sin(self.angle)

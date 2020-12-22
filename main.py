@@ -52,7 +52,7 @@ if __name__ == "__main__":
         main.draw_ui(menu_surface)
 
         pygame.display.update()
-        clock.tick(144)
+        clock.tick(100)
 
     if game_running:
         pygame.display.set_caption('Dungeon game')
@@ -68,6 +68,6 @@ if __name__ == "__main__":
             drawer.draw_all(game_surface, player, FPS=clock.get_fps())
 
             pygame.display.flip()
-            clock.tick(144)
+            clock.tick(100)
 
 pygame.quit()

@@ -24,7 +24,7 @@ def ray_casting(sc, player_pos, player_angle, textures):
             yv = oy + depth_v * sin_a
             tile_v = mapping(x + dx, yv)
             if tile_v in world_map:
-                texture_v = world_map[tile_v]
+                texture_key_v = world_map[tile_v]
                 break
             x += dx * TILE
 
@@ -35,17 +35,21 @@ def ray_casting(sc, player_pos, player_angle, textures):
             xh = ox + depth_h * cos_a
             tile_h = mapping(xh, y + dy)
             if tile_h in world_map:
-                texture_h = world_map[tile_h]
+                texture_key_h = world_map[tile_h]
                 break
             y += dy * TILE
 
         # projection
-        depth, offset, texture = (depth_v, yv, texture_v) if depth_v < depth_h else (depth_h, xh, texture_h)
+        depth, offset, texture_key = (depth_v, yv, texture_key_v) if depth_v < depth_h else (depth_h, xh, texture_key_h)
         offset = int(offset) % TILE
         depth *= math.cos(player_angle - cur_angle)
-        depth = max(depth, 0.00001)
+        if depth <= 0:
+            depth = 0.00001
         proj_height = min(int(PROJ_COEFF / depth), 2 * HEIGHT)
-        wall_column = textures[texture].subsurface(offset * TEXTURE_SCALE, 0, TEXTURE_SCALE, TEXTURE_HEIGHT)
+
+        # wall_column - часть стены, которую охватывает луч
+        wall_column = textures[texture_key].subsurface(offset * TEXTURE_SCALE, 0, TEXTURE_SCALE, TEXTURE_H)
         wall_column = pygame.transform.scale(wall_column, (SCALE, proj_height))
         sc.blit(wall_column, (ray * SCALE, HALF_HEIGHT - proj_height // 2))
+
         cur_angle += DELTA_ANGLE
