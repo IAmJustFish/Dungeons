@@ -38,8 +38,10 @@ def ray_casting(sc, player_pos, player_angle):
         # projection
         depth = depth_v if depth_v < depth_h else depth_h
         depth *= math.cos(player_angle - cur_angle)
-        proj_height = PROJ_COEFF / depth
+        if depth <= 0:
+            depth = 0.00001
+        proj_height = min(int(PROJ_COEFF / depth), 2 * HEIGHT)
         c = 255 / (1 + depth * depth * 0.00002)
-        color = (c // 3, c // 3, c // 3)
+        color = (c // 2, c // 2, c // 2)
         pygame.draw.rect(sc, color, (ray * SCALE, HALF_HEIGHT - proj_height // 2, SCALE, proj_height))
         cur_angle += DELTA_ANGLE

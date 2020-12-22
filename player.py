@@ -12,7 +12,7 @@ class Player:
     @property
     def pos(self):
         return (self.x, self.y)
-    
+
     def is_empty(self, x, y):
         xt, yt = int(x // TILE), int(y // TILE)
         return not text_map[yt][xt] == "W"

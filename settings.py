@@ -1,7 +1,8 @@
 import math
 
 TILE = 64
-SHOW_FPS = False
+SHOW_FPS = True
+DRAW_MINI_MAP = True
 
 # resolution
 WIDTH = 1280
@@ -19,7 +20,7 @@ DARKGRAY = (40, 40, 40)
 PURPLE = (120, 0, 120)
 
 # player settings
-player_pos = (HALF_WIDTH, HALF_HEIGHT)
+player_pos = (250, 250)
 player_angle = 0
 player_speed = 2
 
@@ -30,5 +31,5 @@ NUM_RAYS = 128
 MAX_DEPTH = 800
 DELTA_ANGLE = FOV / NUM_RAYS
 DIST = NUM_RAYS / (2 * math.tan(HALF_FOV))
-PROJ_COEFF = 3 * DIST * TILE
+PROJ_COEFF = 9 * DIST * TILE
 SCALE = WIDTH // NUM_RAYS
