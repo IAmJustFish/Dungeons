@@ -1,6 +1,6 @@
 import math
 
-TILE = 100
+TILE = 64
 SHOW_FPS = False
 
 # resolution
