@@ -38,13 +38,6 @@ Class Gun(pygame.sprite):
 	#
   
   
-Class Wall(pygame.sprite):
-	def init(start, end):
-	#
-	def update():
-	#
-  
-  
 Class Chest(pygame.sprite):
 	def init(start):
 	# spawn weapon
@@ -76,9 +69,22 @@ Class Player(pygame.sprite):
 	#
   
   
-File Main:
+File main:
 -init!
 -move sprites
 -scores
 -time
 -changing maps?
+
+File settings:
+-all settings
+
+File drawer:
+-draw all
+-draw GUI?
+
+File ray_casting:
+-do draw only ray cast(3d drawer)
+
+File map:
+-have info of level(sprites, walls...)
