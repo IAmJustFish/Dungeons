@@ -14,9 +14,8 @@ class Player:
         return (self.x, self.y)
 
     def is_empty(self, x, y):
-        xt, yt = int(x // TILE), int(y // TILE)
-        vals = list(set(world_map.values()))
-        return not text_map[yt][xt] in vals
+        xt, yt = int(x // TILE * TILE), int(y // TILE * TILE)
+        return not (xt, yt) in list(world_map.keys())
 
     def movement(self):
         sin_a = math.sin(self.angle)

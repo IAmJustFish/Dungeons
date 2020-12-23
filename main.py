@@ -64,6 +64,9 @@ if __name__ == "__main__":
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
             player.movement()
             drawer.draw_all(game_surface, player, FPS=clock.get_fps())
 
