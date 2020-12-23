@@ -8,16 +8,22 @@ from ray_casting import ray_casting
 class Drawer:
     def __init__(self):
         self.textures = {'W1': pygame.image.load(os.path.join('data', 'W1.png')).convert_alpha(),
-                         'floor': 'None'}
+                         'floor': 'None',
+                         'sky': pygame.image.load(os.path.join('data', 'sky2.jpg')).convert_alpha()}
 
     def draw_all(self, screen, player, FPS=-1):
         screen.fill(BLACK)
-        self.draw_ground_and_sky(screen)
+
+        self.draw_ground_and_sky(screen, player)
+
         ray_casting(screen, player.pos, player.angle, self.textures)
+
         if DRAW_MINI_MAP:
             self.draw_mini_map(screen, player)
+
         if FPS >= 0 and SHOW_FPS:
             self.draw_FPS(screen, FPS)
+
         if SHOW_CROSSHAIR:
             self.draw_crosshair(screen)
 
