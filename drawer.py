@@ -50,8 +50,8 @@ class Drawer:
         screen.blit(mini_map, (WIDTH - WIDTH / MINI_MAP_SCALE, 0))
 
     def draw_ground_and_sky(self, screen):
-        pygame.draw.rect(screen, BLACK, (0, 0, WIDTH, HALF_HEIGHT))
-        pygame.draw.rect(screen, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+        pygame.draw.rect(background, BLACK, (0, 0, WIDTH, HALF_HEIGHT))
+        pygame.draw.rect(background, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
 
     def draw_crosshair(self, screen):
         pygame.draw.circle(screen, GREEN, (HALF_WIDTH, HALF_HEIGHT), 4)
