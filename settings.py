@@ -2,8 +2,8 @@ import math
 
 
 # resolution
-WIDTH = 1200
-HEIGHT = 800
+WIDTH = 1280
+HEIGHT = 720
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
 

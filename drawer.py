@@ -55,12 +55,9 @@ class Drawer:
 
         screen.blit(mini_map, (WIDTH - WIDTH / MINI_MAP_SCALE, 0))
 
-    def draw_ground_and_sky(self, screen, player):
-        sky_offset = -5 * math.degrees(player.angle) % WIDTH
-        screen.blit(self.textures['sky'], (sky_offset, 0))
-        screen.blit(self.textures['sky'], (sky_offset - WIDTH, 0))
-        screen.blit(self.textures['sky'], (sky_offset + WIDTH, 0))
-        pygame.draw.rect(screen, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+    def draw_ground_and_sky(self, screen):
+        pygame.draw.rect(background, BLACK, (0, 0, WIDTH, HALF_HEIGHT))
+        pygame.draw.rect(background, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
 
     def draw_crosshair(self, screen):
         pygame.draw.circle(screen, GREEN, (HALF_WIDTH, HALF_HEIGHT), 4)
