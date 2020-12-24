@@ -83,8 +83,5 @@ File drawer:
 -draw all
 -draw GUI?
 
-File ray_casting:
--do draw only ray cast(3d drawer)
-
 File map:
 -have info of level(sprites, walls...)
