@@ -1,10 +1,29 @@
 import pygame
 import pygame_gui
-import math
+import os
 from settings import *
 from player import Player
 from map import *
+from Sprites import Wall, Floor
 from drawer import Drawer
+
+
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data', name)
+    # если файл не существует, то выходим
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        exit('main.py')
+    image = pygame.image.load(fullname)
+    if colorkey is not None:
+        image = image.convert()
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    else:
+        image = image.convert_alpha()
+    return image
+
 
 if __name__ == "__main__":
     pygame.init()
@@ -55,10 +74,33 @@ if __name__ == "__main__":
         clock.tick(100)
 
     if game_running:
+        #init window
         pygame.display.set_caption('Dungeon game')
         game_surface = pygame.display.set_mode((WIDTH, HEIGHT))
+
+        # init classes
         player = Player()
         drawer = Drawer()
+        images = {}
+        images['W1'] = load_image('W2_2.png')
+        images['W2'] = load_image('W1.png')
+        images['floor'] = load_image('W2.jpg')
+
+        #do sprites
+        wall_sprites = pygame.sprite.Group()
+        floor_sprites = pygame.sprite.Group()
+        all_sprites = pygame.sprite.Group()
+        sprites = {
+            'walls': wall_sprites,
+            'floor': floor_sprites,
+            'all': all_sprites
+        }
+        for (x, y), key in world_map.items():
+            wall = Wall(x, y, images, key, (wall_sprites, all_sprites))
+        for j, row in enumerate(text_map):
+            for i in range(len(row)):
+                x, y = i * TILE, j * TILE
+                floor = Floor(x, y, images, (floor_sprites, all_sprites))
 
         while game_running:
             for event in pygame.event.get():
@@ -68,7 +110,8 @@ if __name__ == "__main__":
                     if event.key == pygame.K_ESCAPE:
                         exit()
             player.movement()
-            drawer.draw_all(game_surface, player, FPS=clock.get_fps())
+
+            drawer.draw_all(game_surface, player, sprites, FPS=clock.get_fps())
 
             pygame.display.flip()
             clock.tick(100)

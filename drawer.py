@@ -2,7 +2,6 @@ import pygame
 import os
 from settings import *
 from map import *
-from ray_casting import ray_casting
 
 
 class Drawer:
@@ -12,12 +11,12 @@ class Drawer:
                          'floor': 'None',
                          'sky': pygame.image.load(os.path.join('data', 'sky2.jpg')).convert_alpha()}
 
-    def draw_all(self, screen, player, FPS=-1):
-        screen.fill(BLACK)
+    def draw_all(self, screen, player, sprites, FPS=-1):
+        screen.fill(DARKGRAY)
 
-        self.draw_ground_and_sky(screen, player)
+        self.draw_world(screen, sprites)
 
-        ray_casting(screen, player.pos, player.angle, self.textures)
+        self.draw_player(screen, player)
 
         if DRAW_MINI_MAP:
             self.draw_mini_map(screen, player)
@@ -27,6 +26,13 @@ class Drawer:
 
         if SHOW_CROSSHAIR:
             self.draw_crosshair(screen)
+
+    def draw_world(self, screen, sprites):
+        sprites['floor'].draw(screen)
+        sprites['walls'].draw(screen)
+
+    def draw_player(self, screen, player):
+        pygame.draw.circle(screen, YELLOW, (player.pos), 5, 0)
 
     def draw_FPS(self, screen, FPS):
         f1 = pygame.font.Font(None, 50)
@@ -59,9 +65,5 @@ class Drawer:
 
         screen.blit(mini_map, (WIDTH - MINI_MAP_WIDTH * MINI_MAP_SCALE, 0))
 
-    def draw_ground_and_sky(self, screen, player):
-        pygame.draw.rect(screen, BLACK, (0, 0, WIDTH, HALF_HEIGHT))
-        pygame.draw.rect(screen, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
-
     def draw_crosshair(self, screen):
-        pygame.draw.circle(screen, GREEN, (HALF_WIDTH, HALF_HEIGHT), 4)
+        pass

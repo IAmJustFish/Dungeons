@@ -1,13 +1,21 @@
+import pygame
 from settings import *
+
+all_images = {}
+
+
+def get_images(images):
+    all_images = images
+
 
 text_map = [
     'W2 W2 W2 W2 W2 W2 W2 W2 W2 W2 W2 W2',
     'W2 .. .. .. .. .. .. .. .. W1 .. W2',
     'W2 .. .. .. .. W1 .. .. .. W1 .. W2',
-    'W2 W1 W1 W1 .. .. .. W1 .. .. .. W2',
-    'W2 .. .. .. W1 .. .. W1 .. .. .. W2',
-    'W2 .. .. .. W1 .. .. W1 W1 W1 .. W2',
-    'W2 .. .. .. W1 .. .. .. .. W1 .. W2',
+    'W2 W2 W2 W2 .. .. .. W2 .. .. .. W2',
+    'W2 .. .. .. W2 .. .. W2 .. .. .. W2',
+    'W2 .. .. .. W2 .. .. W2 W2 W2 .. W2',
+    'W2 .. .. .. W2 .. .. .. .. W2 .. W2',
     'W2 W2 W2 W2 W2 W2 W2 W2 W2 W2 W2 W2'
 ]
 text_map = [i.split() for i in text_map]

@@ -18,33 +18,23 @@ class Player:
         return not (xt, yt) in list(world_map.keys())
 
     def movement(self):
-        sin_a = math.sin(self.angle)
-        cos_a = math.cos(self.angle)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            xn = self.x + player_speed * cos_a
-            yn = self.y + player_speed * sin_a
-            if self.is_empty(xn, yn):
-                self.x = xn
+            yn = self.y - player_speed
+            if self.is_empty(self.x, yn):
                 self.y = yn
         if keys[pygame.K_s]:
-            xn = self.x + -player_speed * cos_a
-            yn = self.y + -player_speed * sin_a
-            if self.is_empty(xn, yn):
-                self.x = xn
+            yn = self.y + player_speed
+            if self.is_empty(self.x, yn):
                 self.y = yn
         if keys[pygame.K_a]:
-            xn = self.x + player_speed * sin_a
-            yn = self.y + -player_speed * cos_a
-            if self.is_empty(xn, yn):
+            xn = self.x - player_speed
+            if self.is_empty(xn, self.y):
                 self.x = xn
-                self.y = yn
         if keys[pygame.K_d]:
-            xn = self.x + -player_speed * sin_a
-            yn = self.y + player_speed * cos_a
-            if self.is_empty(xn, yn):
+            xn = self.x + player_speed
+            if self.is_empty(xn, self.y):
                 self.x = xn
-                self.y = yn
         if keys[pygame.K_LEFT]:
             self.angle -= 0.03
         if keys[pygame.K_RIGHT]:

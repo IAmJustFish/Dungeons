@@ -2,7 +2,7 @@ import math
 
 
 # resolution
-WIDTH = 1500
+WIDTH = 1540
 HEIGHT = 865
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
@@ -29,19 +29,8 @@ BROWN = (135, 75, 15)
 
 # player settings
 player_pos = (250, 250)
-player_angle = 0
+player_angle = 45
 player_speed = 2
-
-# ray casting settings
-# ALLERT! NUM_RAYS must be WIDTH // 3(SCALE must be = 3)!
-FOV = math.pi / 3
-HALF_FOV = FOV / 2
-NUM_RAYS = 500
-MAX_DEPTH = 800
-DELTA_ANGLE = FOV / NUM_RAYS
-DIST = NUM_RAYS / (2 * math.tan(HALF_FOV))
-PROJ_COEFF = 3 * DIST * TILE
-SCALE = WIDTH // NUM_RAYS
 
 # texture
 TEXTURE_W = 506
