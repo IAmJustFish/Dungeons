@@ -25,6 +25,19 @@ def load_image(name, colorkey=None):
     return image
 
 
+def do_3d(img_name, w, h, s_w, s_h):
+    sc = pygame.Surface((w, h + s_h))
+    sc2 = pygame.Surface((s_w, s_h))
+    sc2.set_alpha(100)
+    c = pygame.Color((0, 0, 0, 100))
+    pygame.draw.rect(sc2, c, (0, 0, s_w, s_h), 0)
+    image2 = load_image(img_name)
+    sc.blit(image2, (0, 0))
+    sc.blit(sc2, (0, h))
+    pygame.transform.scale(sc, (TEXTURE_W, TEXTURE_H + SHADOW_TEXTURE_H))
+    return sc
+
+
 if __name__ == "__main__":
     pygame.init()
 
@@ -80,10 +93,10 @@ if __name__ == "__main__":
 
         # init classes
         player = Player()
-        drawer = Drawer()
-        images = {}
-        images['W1'] = load_image('W2_2.png')
-        images['W2'] = load_image('W1.png')
+        drawer = Drawer(game_surface, player)
+        images = dict()
+        images['W1'] = do_3d('W2_2_3d.png', 1200, 1200, 1200, 600)
+        images['W2'] = do_3d('W1_3d.png', 506, 506, 506, 250)
         images['floor'] = load_image('W2.jpg')
 
         #do sprites
@@ -111,7 +124,7 @@ if __name__ == "__main__":
                         exit()
             player.movement()
 
-            drawer.draw_all(game_surface, player, sprites, FPS=clock.get_fps())
+            drawer.draw_all(sprites, FPS=clock.get_fps())
 
             pygame.display.flip()
             clock.tick(100)
