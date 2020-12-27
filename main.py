@@ -26,6 +26,7 @@ def load_image(name, colorkey=None):
 
 
 def do_3d(img_name, w, h, s_w, s_h):
+    # w, h, s_w, s_h = w // (100 // TILE), h / (100 // TILE), s_w / (100 // TILE), s_h / (100 // TILE)
     sc = pygame.Surface((w, h + s_h))
     sc2 = pygame.Surface((s_w, s_h))
     sc2.set_alpha(100)
@@ -92,18 +93,20 @@ if __name__ == "__main__":
         game_surface = pygame.display.set_mode((WIDTH, HEIGHT))
 
         # init classes
-        player = Player()
-        drawer = Drawer(game_surface, player)
-        images = dict()
-        images['W1'] = do_3d('W2_2_3d.png', 1200, 1200, 1200, 600)
-        images['W2'] = do_3d('W1_3d.png', 506, 506, 506, 250)
-        images['floor'] = load_image('W2.jpg')
-
-        #do sprites
+        player_sprite = pygame.sprite.Group()
         wall_sprites = pygame.sprite.Group()
         floor_sprites = pygame.sprite.Group()
         all_sprites = pygame.sprite.Group()
+        player = Player(player_sprite, all_sprites, im=load_image('player.png', colorkey=-1))
+        drawer = Drawer(game_surface, player)
+        images = dict()
+        images['W1'] = load_image('ice_2.png')
+        images['W2'] = load_image('ice.png')
+        images['floor'] = load_image('ice_floor.png')
+
+        #do sprites
         sprites = {
+            'player': player_sprite,
             'walls': wall_sprites,
             'floor': floor_sprites,
             'all': all_sprites
@@ -112,7 +115,7 @@ if __name__ == "__main__":
             wall = Wall(x, y, images, key, (wall_sprites, all_sprites))
         for j, row in enumerate(text_map):
             for i in range(len(row)):
-                x, y = i * TILE, j * TILE
+                x, y = i * TILE, j * TILE + TILE / 2
                 floor = Floor(x, y, images, (floor_sprites, all_sprites))
 
         while game_running:
@@ -122,7 +125,7 @@ if __name__ == "__main__":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
-            player.movement()
+            all_sprites.update()
 
             drawer.draw_all(sprites, FPS=clock.get_fps())
 

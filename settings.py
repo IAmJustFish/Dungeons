@@ -8,7 +8,7 @@ HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
 
 # game
-TILE = 100
+TILE = 50
 SHOW_FPS = True
 SHOW_CROSSHAIR = True
 DRAW_MINI_MAP = True
@@ -28,7 +28,7 @@ NEFRIT = (0, 168, 107)
 BROWN = (135, 75, 15)
 
 # player settings
-player_pos = (250, 250)
+player_pos = (260, 250)
 player_angle = 45
 player_speed = 2
 

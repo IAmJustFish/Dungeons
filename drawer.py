@@ -6,10 +6,6 @@ from map import *
 
 class Drawer:
     def __init__(self, screen, player):
-        self.textures = {'W1': pygame.image.load(os.path.join('data', 'W1.png')).convert_alpha(),
-                         'W2': pygame.image.load(os.path.join('data', 'W2.jpg')).convert_alpha(),
-                         'floor': 'None',
-                         'sky': pygame.image.load(os.path.join('data', 'sky2.jpg')).convert_alpha()}
         self.screen = screen
         self.player = player
 
@@ -18,7 +14,7 @@ class Drawer:
 
         self.draw_world(sprites)
 
-        self.draw_player()
+        self.draw_player(sprites)
 
         if DRAW_MINI_MAP:
             self.draw_mini_map()
@@ -33,8 +29,8 @@ class Drawer:
         sprites['floor'].draw(self.screen)
         sprites['walls'].draw(self.screen)
 
-    def draw_player(self):
-        pygame.draw.circle(self.screen, YELLOW, (self.player.pos), 5, 0)
+    def draw_player(self, sprites):
+        sprites['player'].draw(self.screen)
 
     def draw_FPS(self, FPS):
         f1 = pygame.font.Font(None, 50)
