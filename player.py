@@ -9,9 +9,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
         self.x, self.y = player_pos
         self.angle = player_angle
-        self.sensitivity = 0.004
-        self.image = im
-        self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_width())
+        self.image = pygame.transform.scale(im, (im.get_width() * 80 // TILE, im.get_height() * 80 // TILE))
+        self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
         self.rect.center = player_pos
 
     @property
@@ -47,16 +46,12 @@ class Player(pygame.sprite.Sprite):
     def movement(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            yn = self.y - player_speed
             self.is_empty(0, -player_speed)
         if keys[pygame.K_s]:
-            yn = self.y + player_speed
             self.is_empty(0, player_speed)
         if keys[pygame.K_a]:
-            xn = self.x - player_speed
             self.is_empty(-player_speed, 0)
         if keys[pygame.K_d]:
-            xn = self.x + player_speed
             self.is_empty(player_speed, 0)
         if keys[pygame.K_LEFT]:
             self.angle -= 0.03

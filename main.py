@@ -118,6 +118,8 @@ if __name__ == "__main__":
                 x, y = i * TILE, j * TILE + TILE / 2
                 floor = Floor(x, y, images, (floor_sprites, all_sprites))
 
+        print(wall_sprites.sprites()[5].rect)
+
         while game_running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

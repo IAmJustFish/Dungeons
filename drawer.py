@@ -14,8 +14,6 @@ class Drawer:
 
         self.draw_world(sprites)
 
-        self.draw_player(sprites)
-
         if DRAW_MINI_MAP:
             self.draw_mini_map()
 
@@ -27,10 +25,18 @@ class Drawer:
 
     def draw_world(self, sprites):
         sprites['floor'].draw(self.screen)
-        sprites['walls'].draw(self.screen)
 
-    def draw_player(self, sprites):
-        sprites['player'].draw(self.screen)
+        sprites_group = self.get_group(sprites)
+        sprites_group.draw(self.screen)
+
+    def get_group(self, sprites):
+        sprites_group = pygame.sprite.Group()
+        player_y = sprites['player'].sprites()[0].pos[1] // TILE * TILE
+        for wall in sprites['walls']:
+            if player_y == wall.rect.y:
+                sprites_group.add(sprites['player'].sprites()[0])
+            sprites_group.add(wall)
+        return sprites_group
 
     def draw_FPS(self, FPS):
         f1 = pygame.font.Font(None, 50)
@@ -40,28 +46,29 @@ class Drawer:
 
     def draw_mini_map(self):
 
-        mini_map = pygame.Surface((MINI_MAP_WIDTH * MINI_MAP_SCALE, MINI_MAP_HEIGHT * MINI_MAP_SCALE))
-        mini_map.fill(DARKGRAY)
+        mini_map = pygame.Surface((MINI_MAP_WIDTH * MINI_MAP_SCALE / 100 * TILE,
+                                   MINI_MAP_HEIGHT * MINI_MAP_SCALE / 100 * TILE))
+        mini_map.fill(WHITE)
 
-        pygame.draw.line(mini_map, GREEN, (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)),
+        pygame.draw.line(mini_map, LIGHT_BLUE, (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)),
                          (self.player.x // MINI_MAP_SCALE + 10 * math.cos(self.player.angle),
                           self.player.y // MINI_MAP_SCALE + 10 * math.sin(self.player.angle)), 2)
 
-        pygame.draw.circle(mini_map, YELLOW,
-                           (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)), 12 // 3)
+        pygame.draw.circle(mini_map, DARK_BLUE,
+                           (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)), 3)
 
         for x, y in world_map:
             if world_map[(x, y)] == 'W1':
-                c = NEFRIT
+                c = BLUE
             elif world_map[(x, y)] == 'W2':
-                c = BROWN
+                c = CYAN
             else:
                 c = WHITE
             pygame.draw.rect(mini_map, c,
                              (x // MINI_MAP_SCALE, y // MINI_MAP_SCALE,
                               TILE // MINI_MAP_SCALE, TILE // MINI_MAP_SCALE), 0)
 
-        self.screen.blit(mini_map, (WIDTH - MINI_MAP_WIDTH * MINI_MAP_SCALE, 0))
+        self.screen.blit(mini_map, (WIDTH - MINI_MAP_WIDTH * MINI_MAP_SCALE / 100 * TILE, 0))
 
     def draw_crosshair(self):
         pass
