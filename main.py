@@ -84,7 +84,7 @@ if __name__ == "__main__":
         main.draw_ui(menu_surface)
 
         pygame.display.update()
-        clock.tick(100)
+        clock.tick(144)
 
     if game_running:
         #init window
@@ -98,8 +98,11 @@ if __name__ == "__main__":
         all_sprites = pygame.sprite.Group()
 
         player = Player(player_sprite, all_sprites,
-                        im=[load_image(('sprites', 'player', f'r_{i}.png'), colorkey=-1) for i in range(7)])
+                        imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in range(7)],
+                        iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in range(7)])
         drawer = Drawer(game_surface, player)
+        camera = Camera(player)
+
         images = dict()
         images['W1'] = load_image(('ice_2.png', ))
         images['W2'] = load_image(('ice.png', ))
@@ -126,11 +129,13 @@ if __name__ == "__main__":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
+            camera.update()
+            camera.apply(all_sprites)
             all_sprites.update()
 
             drawer.draw_all(sprites, FPS=clock.get_fps())
 
             pygame.display.flip()
-            clock.tick(100)
+            clock.tick(144)
 
 pygame.quit()

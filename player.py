@@ -5,31 +5,40 @@ from map import walls_collision
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, *groups, im):
-        super().__init__(groups)
+    def __init__(self, *groups, imr, iml):
+        super().__init__(*groups)
         self.x, self.y = player_pos
         self.angle = player_angle
 
         # animation
         self.animation = {}
-        for step, anim in enumerate(im[:]):
-            self.animation['r_' + str(step)] = pygame.transform.scale(anim,
-                                                                      (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+        for step, anim in enumerate(imr[:]):
+            self.animation['r_' + str(step)] = \
+                pygame.transform.scale(anim,
+                                       (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+        for step, anim in enumerate(iml[:]):
+            self.animation['l_' + str(step)] = \
+                pygame.transform.scale(anim,
+                                       (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+
         self.anim_step = 0
-        self.max_steps = len(im) // 2 * player_speed
+        self.anim_turn = 'r_'
+        self.max_steps = len(imr) // 2 * player_speed
 
         # rect and im
-        self.image = pygame.transform.scale(im[0],
-                                            (im[0].get_width() * 80 // TILE, im[0].get_height() * 80 // TILE))
+        self.image = pygame.transform.scale(imr[0],
+                                            (imr[0].get_width() * 80 // TILE, imr[0].get_height() * 80 // TILE))
         self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
         self.rect.center = player_pos
+        self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
+        self.w_rect.center = player_pos
 
     @property
     def pos(self):
         return (self.x, self.y)
 
     def is_empty(self, dx, dy):
-        next_rect = self.rect.move(dx, dy)
+        next_rect = self.w_rect.move(dx, dy)
         hit_indexes = next_rect.collidelistall(walls_collision)
 
         if len(hit_indexes):
@@ -51,6 +60,8 @@ class Player(pygame.sprite.Sprite):
                 dy = 0
             elif delta_y > delta_x:
                 dx = 0
+        self.rect.x += dx
+        self.rect.y += dy
         self.x += dx
         self.y += dy
 
@@ -74,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT]:
             self.angle += 0.03
 
-        self.rect.center = self.x, self.y
+        self.w_rect.center = self.x, self.y
 
         if step != self.anim_step:
             self.anim_step = self.anim_step + 1
@@ -85,16 +96,24 @@ class Player(pygame.sprite.Sprite):
         
         if pygame.mouse.get_focused():
             x2, y2 = pygame.mouse.get_pos()
-            x1, y1 = self.x, self.y
+            x1, y1 = self.rect.x, self.rect.y
             h = y2 - y1
             w = x2 - x1
             t = math.atan2(h, w)
             self.angle = t
+            if x2 <= HALF_WIDTH:
+                self.anim_turn = 'l_'
+            else:
+                self.anim_turn = 'r_'
 
     def do_animation(self):
-        self.image = self.animation['r_' + str(self.anim_step // 10)]
+        self.image = self.animation[self.anim_turn + str(self.anim_step // 10)]
         if self.anim_step // 10 == self.max_steps:
             self.anim_step = 0
+
+    def move(self, dx, dy):
+        self.rect.x += dx
+        self.rect.y += dy
 
     def update(self):
         self.movement()

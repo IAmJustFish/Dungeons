@@ -31,9 +31,9 @@ class Drawer:
 
     def get_group(self, sprites):
         sprites_group = pygame.sprite.Group()
-        player_y = sprites['player'].sprites()[0].pos[1] // TILE * TILE
+        player_y = sprites['player'].sprites()[0].w_rect.y // TILE * TILE
         for wall in sprites['walls']:
-            if player_y == wall.rect.y:
+            if player_y == wall.w_rect.y:
                 sprites_group.add(sprites['player'].sprites()[0])
             sprites_group.add(wall)
         return sprites_group
@@ -54,7 +54,7 @@ class Drawer:
                          (self.player.x // MINI_MAP_SCALE + 10 * math.cos(self.player.angle),
                           self.player.y // MINI_MAP_SCALE + 10 * math.sin(self.player.angle)), 2)
         pygame.draw.circle(mini_map, DARK_BLUE,
-                           (int(self.player.rect.x / MINI_MAP_SCALE), int(self.player.rect.y / MINI_MAP_SCALE)), 3)
+                           (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)), 3)
 
         for x, y in world_map:
             if world_map[(x, y)] == 'W1':
