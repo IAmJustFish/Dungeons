@@ -4,7 +4,7 @@ import os
 from settings import *
 from player import Player
 from map import *
-from Sprites import Wall, Floor
+from Sprites import Wall, Floor, Camera
 from drawer import Drawer
 
 
@@ -96,7 +96,9 @@ if __name__ == "__main__":
         wall_sprites = pygame.sprite.Group()
         floor_sprites = pygame.sprite.Group()
         all_sprites = pygame.sprite.Group()
-        player = Player(player_sprite, all_sprites, im=load_image(('sprites', 'player', 'r_0.png'), colorkey=-1))
+
+        player = Player(player_sprite, all_sprites,
+                        im=[load_image(('sprites', 'player', f'r_{i}.png'), colorkey=-1) for i in range(7)])
         drawer = Drawer(game_surface, player)
         images = dict()
         images['W1'] = load_image(('ice_2.png', ))
@@ -116,8 +118,6 @@ if __name__ == "__main__":
             for i in range(len(row)):
                 x, y = i * TILE, j * TILE + TILE / 2
                 floor = Floor(x, y, images, (floor_sprites, all_sprites))
-
-        print(wall_sprites.sprites()[5].rect)
 
         while game_running:
             for event in pygame.event.get():

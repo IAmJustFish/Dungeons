@@ -53,9 +53,8 @@ class Drawer:
         pygame.draw.line(mini_map, LIGHT_BLUE, (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)),
                          (self.player.x // MINI_MAP_SCALE + 10 * math.cos(self.player.angle),
                           self.player.y // MINI_MAP_SCALE + 10 * math.sin(self.player.angle)), 2)
-
         pygame.draw.circle(mini_map, DARK_BLUE,
-                           (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)), 3)
+                           (int(self.player.rect.x / MINI_MAP_SCALE), int(self.player.rect.y / MINI_MAP_SCALE)), 3)
 
         for x, y in world_map:
             if world_map[(x, y)] == 'W1':

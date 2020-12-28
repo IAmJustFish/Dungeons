@@ -9,7 +9,18 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
         self.x, self.y = player_pos
         self.angle = player_angle
-        self.image = pygame.transform.scale(im, (im.get_width() * 80 // TILE, im.get_height() * 80 // TILE))
+
+        # animation
+        self.animation = {}
+        for step, anim in enumerate(im[:]):
+            self.animation['r_' + str(step)] = pygame.transform.scale(anim,
+                                                                      (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+        self.anim_step = 0
+        self.max_steps = len(im) // 2 * player_speed
+
+        # rect and im
+        self.image = pygame.transform.scale(im[0],
+                                            (im[0].get_width() * 80 // TILE, im[0].get_height() * 80 // TILE))
         self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
         self.rect.center = player_pos
 
@@ -45,20 +56,32 @@ class Player(pygame.sprite.Sprite):
 
     def movement(self):
         keys = pygame.key.get_pressed()
+        step = self.anim_step
         if keys[pygame.K_w]:
             self.is_empty(0, -player_speed)
+            step += 1
         if keys[pygame.K_s]:
             self.is_empty(0, player_speed)
+            step += 1
         if keys[pygame.K_a]:
             self.is_empty(-player_speed, 0)
+            step += 1
         if keys[pygame.K_d]:
             self.is_empty(player_speed, 0)
+            step += 1
         if keys[pygame.K_LEFT]:
             self.angle -= 0.03
         if keys[pygame.K_RIGHT]:
             self.angle += 0.03
 
         self.rect.center = self.x, self.y
+
+        if step != self.anim_step:
+            self.anim_step = self.anim_step + 1
+        else:
+            self.anim_step = 0
+
+        self.do_animation()
         
         if pygame.mouse.get_focused():
             x2, y2 = pygame.mouse.get_pos()
@@ -67,6 +90,11 @@ class Player(pygame.sprite.Sprite):
             w = x2 - x1
             t = math.atan2(h, w)
             self.angle = t
+
+    def do_animation(self):
+        self.image = self.animation['r_' + str(self.anim_step // 10)]
+        if self.anim_step // 10 == self.max_steps:
+            self.anim_step = 0
 
     def update(self):
         self.movement()

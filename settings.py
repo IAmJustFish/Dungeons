@@ -31,7 +31,7 @@ DARK_BLUE = (11, 0, 140)
 LIGHT_BLUE = (175, 168, 255)
 
 # player settings
-player_pos = (260, 250)
+player_pos = (WIDTH // 2, HEIGHT // 2)
 player_angle = 45
 player_speed = 2
 
