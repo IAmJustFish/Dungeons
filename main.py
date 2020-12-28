@@ -9,7 +9,7 @@ from drawer import Drawer
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join('data', *name)
     # если файл не существует, то выходим
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -26,7 +26,6 @@ def load_image(name, colorkey=None):
 
 
 def do_3d(img_name, w, h, s_w, s_h):
-    # w, h, s_w, s_h = w // (100 // TILE), h / (100 // TILE), s_w / (100 // TILE), s_h / (100 // TILE)
     sc = pygame.Surface((w, h + s_h))
     sc2 = pygame.Surface((s_w, s_h))
     sc2.set_alpha(100)
@@ -97,12 +96,12 @@ if __name__ == "__main__":
         wall_sprites = pygame.sprite.Group()
         floor_sprites = pygame.sprite.Group()
         all_sprites = pygame.sprite.Group()
-        player = Player(player_sprite, all_sprites, im=load_image('player.png', colorkey=-1))
+        player = Player(player_sprite, all_sprites, im=load_image(('sprites', 'player', 'r_0.png'), colorkey=-1))
         drawer = Drawer(game_surface, player)
         images = dict()
-        images['W1'] = load_image('ice_2.png')
-        images['W2'] = load_image('ice.png')
-        images['floor'] = load_image('ice_floor.png')
+        images['W1'] = load_image(('ice_2.png', ))
+        images['W2'] = load_image(('ice.png', ))
+        images['floor'] = load_image(('ice_floor.png', ))
 
         #do sprites
         sprites = {
