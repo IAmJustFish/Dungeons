@@ -97,11 +97,7 @@ if __name__ == "__main__":
         floor_sprites = pygame.sprite.Group()
         all_sprites = pygame.sprite.Group()
 
-        player = Player(player_sprite, all_sprites,
-                        imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in range(7)],
-                        iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in range(7)])
-        drawer = Drawer(game_surface, player)
-        camera = Camera(player)
+        
 
         images = dict()
         images['W1'] = load_image(('image', 'ice_2.png'))
@@ -121,6 +117,14 @@ if __name__ == "__main__":
             for i in range(len(row)):
                 x, y = i * TILE, j * TILE + TILE / 2
                 floor = Floor(x, y, images, (floor_sprites, all_sprites))
+                if text_map[j][i] == "00":
+                    pos = (x, y)
+                    player = Player(player_sprite, all_sprites, 
+                        player_pos=pos,
+                        imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in range(7)],
+                        iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in range(7)])
+        drawer = Drawer(game_surface, player)
+        camera = Camera(player)
 
         while game_running:
             for event in pygame.event.get():
