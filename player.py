@@ -2,13 +2,16 @@ import pygame
 import math
 from settings import *
 from map import walls_collision
+from Guns import Gun
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, *groups, player_pos, imr, iml):
+    def __init__(self, *groups, imr, iml, weapon, all_sprites):
         super().__init__(*groups)
+
+        self.fire = False
         self.x, self.y = player_pos
-        self.angle = 0
+        self.angle = player_angle
 
         # animation
         self.animation = {}
@@ -32,6 +35,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = player_pos
         self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
         self.w_rect.center = player_pos
+
+        self.all_sprites = all_sprites
+        self.weapon = Gun(weapon[0], weapon[1], all_sprites, self)
 
     @property
     def pos(self):
@@ -115,5 +121,19 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
+    def start_fire(self):
+        self.fire = True
+
+    def stop_fire(self):
+        self.fire = False
+
+    def hit(self, *args, **kwarks):
+        return False
+
     def update(self):
         self.movement()
+        if self.fire:
+            self.weapon.fire()
+
+    def get_weapon(self, weapon):
+        self.weapon = weapon

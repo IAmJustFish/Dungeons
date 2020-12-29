@@ -6,6 +6,7 @@ from player import Player
 from map import *
 from Sprites import Wall, Floor, Camera
 from drawer import Drawer
+from Guns import Gun
 
 
 def load_image(name, colorkey=None):
@@ -96,8 +97,20 @@ if __name__ == "__main__":
         wall_sprites = pygame.sprite.Group()
         floor_sprites = pygame.sprite.Group()
         all_sprites = pygame.sprite.Group()
+        weapon_sprites = pygame.sprite.Group()
+        bullet_sprites = pygame.sprite.Group()
 
-        
+        groups_for_weapon = {'bullet': (bullet_sprites, all_sprites),
+                             'weapon': (weapon_sprites, all_sprites)}
+
+        some_sprites = wall_sprites
+
+        player = Player(player_sprite, all_sprites,
+                        imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in range(7)],
+                        iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in range(7)],
+                        weapon=('mp5', groups_for_weapon), all_sprites=some_sprites)
+        drawer = Drawer(game_surface, player)
+        camera = Camera(player)
 
         images = dict()
         images['W1'] = load_image(('image', 'ice_2.png'))
@@ -109,6 +122,8 @@ if __name__ == "__main__":
             'player': player_sprite,
             'walls': wall_sprites,
             'floor': floor_sprites,
+            'weapon': weapon_sprites,
+            'bullet': bullet_sprites,
             'all': all_sprites
         }
         for (x, y), key in world_map.items():
@@ -117,14 +132,6 @@ if __name__ == "__main__":
             for i in range(len(row)):
                 x, y = i * TILE, j * TILE + TILE / 2
                 floor = Floor(x, y, images, (floor_sprites, all_sprites))
-                if text_map[j][i] == "00":
-                    pos = (x, y)
-                    player = Player(player_sprite, all_sprites, 
-                        player_pos=pos,
-                        imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in range(7)],
-                        iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in range(7)])
-        drawer = Drawer(game_surface, player)
-        camera = Camera(player)
 
         while game_running:
             for event in pygame.event.get():
@@ -133,9 +140,15 @@ if __name__ == "__main__":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    player.start_fire()
+                if event.type == pygame.MOUSEBUTTONUP:
+                    player.stop_fire()
             camera.update()
             camera.apply(all_sprites)
             all_sprites.update()
+
+
 
             drawer.draw_all(sprites, FPS=clock.get_fps())
 

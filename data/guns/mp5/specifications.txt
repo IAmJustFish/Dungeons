@@ -1,0 +1,7 @@
+damage = 1
+speed = 20
+spreading = 1
+ammo = 30
+all_ammo = 120
+bullet_speed = 1
+rateOfFire = 0.5

@@ -14,6 +14,7 @@ SHOW_CROSSHAIR = True
 DRAW_MINI_MAP = True
 MINI_MAP_SCALE = 10
 MINI_MAP_POS = WIDTH - WIDTH / MINI_MAP_SCALE, 0
+BULLETS_SPEED = 1
 
 # colors
 WHITE = (255, 255, 255)
@@ -31,7 +32,7 @@ DARK_BLUE = (11, 0, 140)
 LIGHT_BLUE = (175, 168, 255)
 
 # player settings
-player_pos = (WIDTH // 2, HEIGHT // 2)
+player_pos = (500, 500)
 player_angle = 45
 player_speed = 2
 

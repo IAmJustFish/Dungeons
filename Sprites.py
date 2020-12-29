@@ -13,6 +13,9 @@ class Wall(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
+    def hit(self, *args, **kwarks):
+        return True
+
 
 class Floor(pygame.sprite.Sprite):
     def __init__(self, x, y, images, groups):
@@ -23,6 +26,9 @@ class Floor(pygame.sprite.Sprite):
     def move(self, dx, dy):
         self.rect.x += dx
         self.rect.y += dy
+
+    def hit(self, *args, **kwarks):
+        return False
 
 
 class Camera:
