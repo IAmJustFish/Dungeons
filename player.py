@@ -5,10 +5,10 @@ from map import walls_collision
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, *groups, imr, iml):
+    def __init__(self, *groups, player_pos, imr, iml):
         super().__init__(*groups)
         self.x, self.y = player_pos
-        self.angle = player_angle
+        self.angle = 0
 
         # animation
         self.animation = {}
