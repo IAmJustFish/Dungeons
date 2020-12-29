@@ -104,9 +104,9 @@ if __name__ == "__main__":
         camera = Camera(player)
 
         images = dict()
-        images['W1'] = load_image(('ice_2.png', ))
-        images['W2'] = load_image(('ice.png', ))
-        images['floor'] = load_image(('ice_floor.png', ))
+        images['W1'] = load_image(('image', 'ice_2.png'))
+        images['W2'] = load_image(('image', 'ice.png'))
+        images['floor'] = load_image(('image', 'ice_floor.png'))
 
         #do sprites
         sprites = {
