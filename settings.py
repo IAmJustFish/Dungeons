@@ -29,10 +29,10 @@ NEFRIT = (0, 168, 107)
 BROWN = (135, 75, 15)
 CYAN = (31, 204, 255)
 DARK_BLUE = (11, 0, 140)
-LIGHT_BLUE = (175, 168, 255)
+LIGHT_BLUE = (105, 180, 255)
 
 # player settings
-player_pos = (500, 500)
+player_pos = (100, 100)
 player_angle = 45
 player_speed = 2
 

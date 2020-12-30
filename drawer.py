@@ -28,6 +28,8 @@ class Drawer:
 
         sprites_group = self.get_group(sprites)
         sprites_group.draw(self.screen)
+        sprites['weapon'].draw(self.screen)
+        sprites['bullet'].draw(self.screen)
 
     def get_group(self, sprites):
         sprites_group = pygame.sprite.Group()
@@ -50,7 +52,8 @@ class Drawer:
                                    MINI_MAP_HEIGHT * MINI_MAP_SCALE / 100 * TILE))
         mini_map.fill(WHITE)
 
-        pygame.draw.line(mini_map, LIGHT_BLUE, (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)),
+        pygame.draw.line(mini_map, LIGHT_BLUE,
+                         (int(self.player.x / MINI_MAP_SCALE), int(self.player.y / MINI_MAP_SCALE)),
                          (self.player.x // MINI_MAP_SCALE + 10 * math.cos(self.player.angle),
                           self.player.y // MINI_MAP_SCALE + 10 * math.sin(self.player.angle)), 2)
         pygame.draw.circle(mini_map, DARK_BLUE,
@@ -58,9 +61,9 @@ class Drawer:
 
         for x, y in world_map:
             if world_map[(x, y)] == 'W1':
-                c = BLUE
+                c = LIGHT_BLUE
             elif world_map[(x, y)] == 'W2':
-                c = CYAN
+                c = BLUE
             else:
                 c = WHITE
             pygame.draw.rect(mini_map, c,

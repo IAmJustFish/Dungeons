@@ -6,6 +6,7 @@ from player import Player
 from map import *
 from Sprites import Wall, Floor, Camera
 from drawer import Drawer
+from Rooms import Room
 from Guns import Gun
 
 
@@ -99,6 +100,7 @@ if __name__ == "__main__":
         all_sprites = pygame.sprite.Group()
         weapon_sprites = pygame.sprite.Group()
         bullet_sprites = pygame.sprite.Group()
+        enemy_sprites = pygame.sprite.Group()
 
         groups_for_weapon = {'bullet': (bullet_sprites, all_sprites),
                              'weapon': (weapon_sprites, all_sprites)}
@@ -111,6 +113,8 @@ if __name__ == "__main__":
                         weapon=('mp5', groups_for_weapon), all_sprites=some_sprites)
         drawer = Drawer(game_surface, player)
         camera = Camera(player)
+        room = Room(text_map, (enemy_sprites, all_sprites), 1)
+        room.spawn_monsters()
 
         images = dict()
         images['W1'] = load_image(('image', 'ice_2.png'))
@@ -124,6 +128,7 @@ if __name__ == "__main__":
             'floor': floor_sprites,
             'weapon': weapon_sprites,
             'bullet': bullet_sprites,
+            'enemy': enemy_sprites,
             'all': all_sprites
         }
         for (x, y), key in world_map.items():
@@ -148,7 +153,10 @@ if __name__ == "__main__":
             camera.apply(all_sprites)
             all_sprites.update()
 
-
+            if room.is_clear():
+                room = Room(text_map, (enemy_sprites, all_sprites), 1)
+                for sprite in enemy_sprites.sprites():
+                    sprite.kill()
 
             drawer.draw_all(sprites, FPS=clock.get_fps())
 

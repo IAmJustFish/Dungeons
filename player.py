@@ -32,9 +32,9 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(imr[0],
                                             (imr[0].get_width() * 80 // TILE, imr[0].get_height() * 80 // TILE))
         self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
-        self.rect.center = player_pos
+        self.rect.topleft = player_pos
         self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
-        self.w_rect.center = player_pos
+        self.w_rect.topleft = player_pos
 
         self.all_sprites = all_sprites
         self.weapon = Gun(weapon[0], weapon[1], all_sprites, self)
