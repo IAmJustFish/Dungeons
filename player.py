@@ -32,9 +32,11 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(imr[0],
                                             (imr[0].get_width() * 80 // TILE, imr[0].get_height() * 80 // TILE))
         self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
-        self.rect.topleft = player_pos
+        self.rect.center = player_pos
+
+        # rect for world collision
         self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
-        self.w_rect.topleft = player_pos
+        self.w_rect.center = player_pos
 
         self.all_sprites = all_sprites
         self.weapon = Gun(weapon[0], weapon[1], all_sprites, self)
@@ -86,10 +88,6 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_d]:
             self.is_empty(player_speed, 0)
             step += 1
-        if keys[pygame.K_LEFT]:
-            self.angle -= 0.03
-        if keys[pygame.K_RIGHT]:
-            self.angle += 0.03
 
         self.w_rect.center = self.x, self.y
 
