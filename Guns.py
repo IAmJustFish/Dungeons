@@ -27,6 +27,7 @@ class Gun(pygame.sprite.Sprite):
         super().__init__(groups['weapon'])
         self.groups = groups
         self.player = player
+        self.turn = player.turn
         self.all_sprites = all_sprites
 
         # import settings
@@ -42,7 +43,7 @@ class Gun(pygame.sprite.Sprite):
         self.image = self.r_im
         self.rect = self.image.get_rect()
         self.rect.center = self.player.rect.center
-        self.time = 0
+        self.time = 1
 
     def fire(self):
         if self.time % self.specifications['speed'] == 0:
@@ -52,10 +53,10 @@ class Gun(pygame.sprite.Sprite):
             dy = (self.player.y // BULLETS_SPEED + 10 * math.sin(self.player.angle) - self.player.y)\
                  * self.specifications['bullet_speed'] // BULLETS_SPEED
             bullet = Bullet(self.groups, self.rect.center, (dx, dy)
-                            , self.specifications['damage'], 'player', self.all_sprites)
+                            , self.specifications['damage'], self.turn, self.all_sprites, self.player.bullet_name)
 
     def update(self):
-        if pygame.mouse.get_pos()[0] <= HALF_WIDTH:
+        if self.rect.x <= HALF_WIDTH:
             self.image = self.l_im
         else:
             self.image = self.r_im
@@ -66,9 +67,15 @@ class Gun(pygame.sprite.Sprite):
     def get_player(self, player):
         self.player = player
 
+    def dead(self):
+        self.kill()
+
     def move(self, dx, dy):
         self.rect.x += dx
         self.rect.y += dy
+
+    def can_fire(self):
+        return self.time % self.specifications['speed'] == 0
 
     def hit(self, *args, **kwarks):
         return False

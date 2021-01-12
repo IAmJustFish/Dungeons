@@ -1,7 +1,9 @@
 import pygame
 import os
+import random
 from settings import *
 from map import walls_collision
+from Guns import Gun
 
 
 def load_image(name, colorkey=-1):
@@ -14,7 +16,7 @@ def load_image(name, colorkey=-1):
     if colorkey is not None:
         image = image.convert()
         if colorkey == -1:
-            colorkey = image.get_at((0, 0))
+            colorkey = image.get_at((5, 0))
         image.set_colorkey(colorkey)
     else:
         image = image.convert_alpha()
@@ -22,27 +24,30 @@ def load_image(name, colorkey=-1):
 
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, groups, lvl, pos, type):
+    def __init__(self, *groups, lvl, pos, monster_type, weapon=None):
         super().__init__(*groups)
 
-        imr = [load_image(('data', 'sprites', 'monsters', type['name'], 'R', i)) for i in range(int(type['R']))]
-        iml = [load_image(('data', 'sprites', 'monsters', type['name'], 'L', i)) for i in range(int(type['L']))]
-        imf = [load_image(('data', 'sprites', 'monsters', type['name'], 'F', i)) for i in range(int(type['F']))]
+        imr = [load_image(('sprites', 'monsters', monster_type['name'], 'R', f'{i}.png')) for i in
+               range(int(monster_type['R']))]
+        iml = [load_image(('sprites', 'monsters', monster_type['name'], 'L', f'{i}.png')) for i in
+               range(int(monster_type['L']))]
+        imf = [load_image(('sprites', 'monsters', monster_type['name'], 'F', f'{i}.png')) for i in
+               range(int(monster_type['F']))]
 
         # animation
         self.animation = {}
         for step, anim in enumerate(imr[:]):
             self.animation['r_' + str(step)] = \
                 pygame.transform.scale(anim,
-                                       (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+                                       (anim.get_width() * 150 // TILE, anim.get_height() * 150 // TILE))
         for step, anim in enumerate(iml[:]):
             self.animation['l_' + str(step)] = \
                 pygame.transform.scale(anim,
-                                       (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+                                       (anim.get_width() * 150 // TILE, anim.get_height() * 150 // TILE))
         for step, anim in enumerate(imf[:]):
             self.animation['f_' + str(step)] = \
                 pygame.transform.scale(anim,
-                                       (anim.get_width() * 80 // TILE, anim.get_height() * 80 // TILE))
+                                       (anim.get_width() * 150 // TILE, anim.get_height() * 150 // TILE))
 
         self.anim_step = 0
         self.anim_turn = 'r_'
@@ -50,21 +55,32 @@ class Monster(pygame.sprite.Sprite):
 
         # rect and im
         self.image = pygame.transform.scale(imr[0],
-                                            (imr[0].get_width() * 80 // TILE, imr[0].get_height() * 80 // TILE))
+                                            (imr[0].get_width() * 150 // TILE, imr[0].get_height() * 150 // TILE))
 
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
         self.x, self.y = pos
+        self.rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
+        self.rect.center = pos
+        self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
+        self.w_rect.center = pos
+        self.angle = 45
+        self.set_lives(lvl)
+
+        self.weapon = Gun(weapon[0], weapon[1], groups[0], self)
         self.fire = False
         self.settings = {'lvl': lvl,
-                         'type': type}
+                         'type': monster_type}
+        print(pos)
 
     @property
     def pos(self):
-        return (self.x, self.y)
+        return self.x, self.y
+
+    @property
+    def turn(self):
+        return 'monster'
 
     def is_empty(self, dx, dy):
-        next_rect = self.rect.move(dx, dy)
+        next_rect = self.w_rect.move(dx, dy)
         hit_indexes = next_rect.collidelistall(walls_collision)
 
         if len(hit_indexes):
@@ -92,46 +108,19 @@ class Monster(pygame.sprite.Sprite):
         self.y += dy
 
     def movement(self):
-        keys = pygame.key.get_pressed()
-        step = self.anim_step
-        if keys[pygame.K_w]:
-            self.is_empty(0, -player_speed)
-            step += 1
-        if keys[pygame.K_s]:
-            self.is_empty(0, player_speed)
-            step += 1
-        if keys[pygame.K_a]:
-            self.is_empty(-player_speed, 0)
-            step += 1
-        if keys[pygame.K_d]:
-            self.is_empty(player_speed, 0)
-            step += 1
-
-        self.rect.center = self.x, self.y
-
-        if step != self.anim_step:
-            self.anim_step = self.anim_step + 1
-        else:
-            self.anim_step = 0
-
-        self.do_animation()
-
-        if self.rect.x <= HALF_WIDTH:
-            self.anim_turn = 'l_'
-        else:
-            self.anim_turn = 'r_'
+        self.w_rect.center = self.x, self.y
 
     def do_animation(self):
-        if self.fire == True:
-            self.image = self.animation['f_' + str(self.anim_step // 5)]
-            if self.anim_step // 5 == self.max_steps:
+        if self.fire and self.weapon.can_fire():
+            if self.anim_step // 15 == self.settings['type']['F']:
                 self.anim_step = 0
                 self.stop_fire()
                 self.do_fire()
+            self.image = self.animation['f_' + str(self.anim_step // 15)]
         else:
-            self.image = self.animation[self.anim_turn + str(self.anim_step // 10)]
-            if self.anim_step // 10 == self.max_steps:
+            if self.anim_step // 10 == self.settings['type'][self.anim_turn[0].upper()]:
                 self.anim_step = 0
+            self.image = self.animation[self.anim_turn + str(self.anim_step // 10)]
 
     def move(self, dx, dy):
         self.rect.x += dx
@@ -144,19 +133,90 @@ class Monster(pygame.sprite.Sprite):
         self.fire = False
 
     def do_fire(self):
-        pass
+        self.weapon.fire()
 
     def hit(self, *args, **kwarks):
+        if args[0] == 'player':
+            self.lives -= args[1]
+            if not self.is_live:
+                self.dead()
+            return True
         return False
 
     def update(self):
         self.movement()
-        if self.fire:
-            self.weapon.fire()
-
-    def get_weapon(self, weapon):
-        self.weapon = weapon
 
     @property
     def is_live(self):
-        return True
+        if self.lives > 0:
+            return True
+        return False
+
+    def dead(self):
+        self.weapon.dead()
+        self.kill()
+
+    def set_lives(self, lvl):
+        pass
+
+
+class Virus(Monster):
+    def set_lives(self, lvl):
+        self.lives = 7 + (lvl * 0.5)
+        self.m_lives = self.lives
+
+    def movement(self):
+        dx = 0
+        dy = 0
+
+        x, y = HALF_WIDTH - self.rect.x, HALF_HEIGHT - self.rect.y
+        if abs(x) > 250:
+            if x > 0:
+                dx += enemie_speed
+            else:
+                dx -= enemie_speed
+        elif abs(x) < 100 and abs(y) < 100:
+            if x > 0:
+                dx -= enemie_speed / 2
+            else:
+                dx += enemie_speed / 2
+
+        if abs(y) > 250:
+            if y > 0:
+                dy += enemie_speed
+            else:
+                dy -= enemie_speed
+        elif abs(x) < 100 and abs(y) < 100:
+            if y > 0:
+                dy -= enemie_speed / 2
+            else:
+                dy += enemie_speed / 2
+
+        if x < 600 and y < 600:
+            self.fire = True
+        else:
+            self.fire = False
+
+        self.is_empty(dx, dy)
+
+        self.w_rect.center = self.x, self.y
+
+        self.anim_step += 1
+
+        self.do_animation()
+
+        if self.rect.x <= HALF_WIDTH:
+            self.anim_turn = 'l_'
+        else:
+            self.anim_turn = 'r_'
+
+        x2, y2 = HALF_WIDTH, HALF_HEIGHT
+        x1, y1 = self.rect.x, self.rect.y
+        h = y2 - y1
+        w = x2 - x1
+        t = math.atan2(h, w)
+        self.angle = t
+
+    @property
+    def bullet_name(self):
+        return 'virus.png'

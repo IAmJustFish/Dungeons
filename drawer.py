@@ -20,25 +20,31 @@ class Drawer:
         if FPS >= 0 and SHOW_FPS:
             self.draw_FPS(FPS)
 
-        if SHOW_CROSSHAIR:
+        if DRAW_CROSSHAIR:
             self.draw_crosshair()
+
+        if DRAW_HUD:
+            self.draw_hud()
 
     def draw_world(self, sprites):
         sprites['floor'].draw(self.screen)
 
-        sprites_group = self.get_group(sprites)
+        all_sprites = self.get_group(sprites)
+        sprites_group = pygame.sprite.Group()
+        for sprite in all_sprites:
+            sprites_group.add(sprite)
         sprites_group.draw(self.screen)
+        sprites_group.empty()
         sprites['weapon'].draw(self.screen)
         sprites['bullet'].draw(self.screen)
 
     def get_group(self, sprites):
-        sprites_group = pygame.sprite.Group()
-        player_y = sprites['player'].sprites()[0].w_rect.y // TILE * TILE
-        for wall in sprites['walls']:
-            if player_y == wall.w_rect.y:
-                sprites_group.add(sprites['player'].sprites()[0])
-            sprites_group.add(wall)
-        return sprites_group
+        walls = sprites['walls'].sprites()
+        player = sprites['player'].sprites()
+        enemies = sprites['enemy'].sprites()
+        all = walls + player + enemies
+        all = sorted(all, key=lambda sprite: sprite.w_rect.y)
+        return all
 
     def draw_FPS(self, FPS):
         f1 = pygame.font.Font(None, 50)
@@ -74,3 +80,20 @@ class Drawer:
 
     def draw_crosshair(self):
         pass
+
+    def draw_hud(self):
+        c = RED
+        delta_c = (c[0] - c[0] * 0.1) // self.player.m_lives
+        delta = LIVES_WIDTH // self.player.m_lives
+        for x in range(self.player.m_lives):
+            if self.player.lives > x:
+                c = RED
+                pygame.draw.rect(self.screen, c, (x * delta, 1, delta, LIVES_HEIGHT - 1), 0)
+            else:
+                c = BLACK
+                pygame.draw.rect(self.screen, c, (x * delta, 1, delta, LIVES_HEIGHT - 1), 0)
+        for x in range(self.player.m_lives):
+            c = BLACK
+            pygame.draw.line(self.screen, c, (x * delta, 0), ((x + 0) * delta, LIVES_HEIGHT), 1)
+        pygame.draw.rect(self.screen, BLACK,
+                         (0, 0, self.player.m_lives * delta, LIVES_HEIGHT), 1)

@@ -3,11 +3,11 @@ import pygame_gui
 import os
 from settings import *
 from player import Player
-from map import *
+from Enemies import Virus
 from Sprites import Wall, Floor, Camera
+from map import *
 from drawer import Drawer
 from Rooms import Room
-from Guns import Gun
 
 
 def load_image(name, colorkey=None):
@@ -92,6 +92,7 @@ if __name__ == "__main__":
         #init window
         pygame.display.set_caption('Dungeon game')
         game_surface = pygame.display.set_mode((WIDTH, HEIGHT))
+        game_unpaused = 1
 
         # init classes
         player_sprite = pygame.sprite.Group()
@@ -101,27 +102,16 @@ if __name__ == "__main__":
         weapon_sprites = pygame.sprite.Group()
         bullet_sprites = pygame.sprite.Group()
         enemy_sprites = pygame.sprite.Group()
+        collision_sprites = pygame.sprite.Group()
 
         groups_for_weapon = {'bullet': (bullet_sprites, all_sprites),
                              'weapon': (weapon_sprites, all_sprites)}
-
-        some_sprites = wall_sprites
-
-        player = Player(player_sprite, all_sprites,
-                        imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in range(7)],
-                        iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in range(7)],
-                        weapon=('mp5', groups_for_weapon), all_sprites=some_sprites)
-        drawer = Drawer(game_surface, player)
-        camera = Camera(player)
-        room = Room(text_map, (enemy_sprites, all_sprites), 1)
-        room.spawn_monsters()
 
         images = dict()
         images['W1'] = load_image(('image', 'ice_2.png'))
         images['W2'] = load_image(('image', 'ice.png'))
         images['floor'] = load_image(('image', 'ice_floor.png'))
 
-        #do sprites
         sprites = {
             'player': player_sprite,
             'walls': wall_sprites,
@@ -131,12 +121,36 @@ if __name__ == "__main__":
             'enemy': enemy_sprites,
             'all': all_sprites
         }
+
+        virus = {
+            'name': 'virus',
+            'R': 6,
+            'L': 6,
+            'F': 4
+        }
+
         for (x, y), key in world_map.items():
-            wall = Wall(x, y, images, key, (wall_sprites, all_sprites))
+            wall = Wall(x, y, images, key, (wall_sprites, all_sprites, collision_sprites))
         for j, row in enumerate(text_map):
             for i in range(len(row)):
                 x, y = i * TILE, j * TILE + TILE / 2
                 floor = Floor(x, y, images, (floor_sprites, all_sprites))
+                if row[i] == 'pl':
+                    player = Player(player_sprite, all_sprites, collision_sprites,
+                                    imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in
+                                         range(7)],
+                                    iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in
+                                         range(7)],
+                                    weapon=('mp5', groups_for_weapon), all_sprites=collision_sprites,
+                                    player_pos=(x, y))
+                elif row[i] == 'e1':
+                    VM = Virus(all_sprites, enemy_sprites, collision_sprites, lvl=1, monster_type=virus,
+                               pos=(x, y), weapon=('virus_sphere', groups_for_weapon))
+
+        drawer = Drawer(game_surface, player)
+        camera = Camera(player)
+        room = Room(text_map, (enemy_sprites, all_sprites), 1)
+        room.spawn_monsters()
 
         while game_running:
             for event in pygame.event.get():
@@ -145,18 +159,25 @@ if __name__ == "__main__":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.key == pygame.K_SPACE:
+                        game_unpaused = (game_unpaused + 1) % 2
+                if event.type == pygame.MOUSEBUTTONDOWN and game_unpaused:
                     player.start_fire()
-                if event.type == pygame.MOUSEBUTTONUP:
+                if event.type == pygame.MOUSEBUTTONUP and game_unpaused:
                     player.stop_fire()
-            camera.update()
-            camera.apply(all_sprites)
-            all_sprites.update()
+            if game_unpaused:
+                camera.update()
+                camera.apply(all_sprites)
+                all_sprites.update()
 
-            if room.is_clear():
-                room = Room(text_map, (enemy_sprites, all_sprites), 1)
-                for sprite in enemy_sprites.sprites():
-                    sprite.kill()
+                if room.is_clear():
+                    room = Room(text_map, (enemy_sprites, all_sprites), 1)
+                    for sprite in enemy_sprites.sprites():
+                        sprite.kill()
+
+                if game_running:
+                    if not player.is_live:
+                        game_running = False
 
             drawer.draw_all(sprites, FPS=clock.get_fps())
 

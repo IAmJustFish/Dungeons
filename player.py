@@ -6,12 +6,14 @@ from Guns import Gun
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, *groups, imr, iml, weapon, all_sprites):
+    def __init__(self, *groups, imr, iml, weapon, all_sprites, player_pos):
         super().__init__(*groups)
 
         self.fire = False
         self.x, self.y = player_pos
         self.angle = player_angle
+        self.lives = player_lives
+        self.m_lives = player_lives
 
         # animation
         self.animation = {}
@@ -39,11 +41,19 @@ class Player(pygame.sprite.Sprite):
         self.w_rect.center = player_pos
 
         self.all_sprites = all_sprites
-        self.weapon = Gun(weapon[0], weapon[1], all_sprites, self)
+        self.weapon = Gun(weapon[0], weapon[1], all_sprites, player=self)
 
     @property
     def pos(self):
         return (self.x, self.y)
+
+    @property
+    def bullet_name(self):
+        return 'bullet.png'
+
+    @property
+    def turn(self):
+        return 'player'
 
     def is_empty(self, dx, dy):
         next_rect = self.w_rect.move(dx, dy)
@@ -126,6 +136,20 @@ class Player(pygame.sprite.Sprite):
         self.fire = False
 
     def hit(self, *args, **kwarks):
+        if args[0] == 'monster':
+            self.lives -= args[1]
+            if not self.is_live:
+                self.dead()
+            return True
+        return False
+
+    def dead(self):
+        pass
+
+    @property
+    def is_live(self):
+        if self.lives > 0:
+            return True
         return False
 
     def update(self):

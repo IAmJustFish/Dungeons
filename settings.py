@@ -10,7 +10,10 @@ HALF_HEIGHT = HEIGHT // 2
 # game
 TILE = 50
 SHOW_FPS = True
-SHOW_CROSSHAIR = True
+DRAW_CROSSHAIR = True
+DRAW_HUD = True
+LIVES_WIDTH = 200
+LIVES_HEIGHT = 25
 DRAW_MINI_MAP = True
 MINI_MAP_SCALE = 10
 MINI_MAP_POS = WIDTH - WIDTH / MINI_MAP_SCALE, 0
@@ -32,9 +35,9 @@ DARK_BLUE = (11, 0, 140)
 LIGHT_BLUE = (105, 180, 255)
 
 # player settings
-player_pos = (100, 100)
 player_angle = 45
 player_speed = 2
+player_lives = 15
 
 # texture
 TEXTURE_W = 506
@@ -42,3 +45,6 @@ TEXTURE_H = 506
 SHADOW_TEXTURE_H = 250
 SHADOW_TEXTURE_W = 506
 TEXTURE_SCALE = TEXTURE_W // TILE
+
+# enemies
+enemie_speed = 2

@@ -21,9 +21,9 @@ def load_image(name, colorkey=-1):
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, groups, pos, vec, damage, turn, all_sprites):
+    def __init__(self, groups, pos, vec, damage, turn, all_sprites, bullet_name):
         super().__init__(groups['bullet'])
-        self.image = load_image(('sprites', 'bullets', 'bullet.png'), colorkey=-1)
+        self.image = load_image(('sprites', 'bullets', bullet_name), colorkey=-1)
         self.rect = self.image.get_rect()
         self.x, self.y, self.dx, self.dy = pos[0], pos[1], vec[0], vec[1]
         self.rect.center = pos
@@ -40,11 +40,16 @@ class Bullet(pygame.sprite.Sprite):
         for sprite in self.all_sprites:
             collision = self.rect.colliderect(sprite.rect)
             if collision:
-                collisions.append(collision)
+                collisions.append(sprite)
+        for sprite in self.all_sprites:
+            if sprite.rect.w < 50:
+                collision = self.rect.colliderect(sprite.rect)
+                if collision:
+                    pass
         kill_self = False
         if collisions:
             for sprite in collisions:
-                died = self.all_sprites.sprites()[sprite].hit(self.turn, self.damage)
+                died = sprite.hit(self.turn, self.damage)
                 if died:
                     kill_self = True
             if kill_self:
