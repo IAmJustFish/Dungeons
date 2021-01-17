@@ -24,7 +24,7 @@ def load_image(name, colorkey=-1):
 
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, *groups, lvl, pos, monster_type, weapon=None):
+    def __init__(self, *groups, lvl, pos, monster_type, weapon=None, collisions):
         super().__init__(*groups)
 
         imr = [load_image(('sprites', 'monsters', monster_type['name'], 'R', f'{i}.png')) for i in
@@ -33,6 +33,7 @@ class Monster(pygame.sprite.Sprite):
                range(int(monster_type['L']))]
         imf = [load_image(('sprites', 'monsters', monster_type['name'], 'F', f'{i}.png')) for i in
                range(int(monster_type['F']))]
+        imd = load_image(('sprites', 'monsters', monster_type['name'], 'D', 'dead.png'))
 
         # animation
         self.animation = {}
@@ -48,6 +49,8 @@ class Monster(pygame.sprite.Sprite):
             self.animation['f_' + str(step)] = \
                 pygame.transform.scale(anim,
                                        (anim.get_width() * 150 // TILE, anim.get_height() * 150 // TILE))
+        self.animation['d'] = pygame.transform.scale(imd,
+                                       (imd.get_width() * 150 // TILE, imd.get_height() * 150 // TILE))
 
         self.anim_step = 0
         self.anim_turn = 'r_'
@@ -62,6 +65,7 @@ class Monster(pygame.sprite.Sprite):
         self.rect.center = pos
         self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
         self.w_rect.center = pos
+        walls_collision.append(self.w_rect)
         self.angle = 45
         self.set_lives(lvl)
 
@@ -69,7 +73,6 @@ class Monster(pygame.sprite.Sprite):
         self.fire = False
         self.settings = {'lvl': lvl,
                          'type': monster_type}
-        print(pos)
 
     @property
     def pos(self):
@@ -83,18 +86,19 @@ class Monster(pygame.sprite.Sprite):
         next_rect = self.w_rect.move(dx, dy)
         hit_indexes = next_rect.collidelistall(walls_collision)
 
-        if len(hit_indexes):
+        if len(hit_indexes) > 1:
             delta_x, delta_y = 0, 0
             for hit_index in hit_indexes:
                 hit_rect = walls_collision[hit_index]
-                if dx > 0:
-                    delta_x += next_rect.right - hit_rect.left
-                else:
-                    delta_x += hit_rect.right - next_rect.left
-                if dy > 0:
-                    delta_y += next_rect.bottom - hit_rect.top
-                else:
-                    delta_y += hit_rect.bottom - next_rect.top
+                if hit_rect != self.w_rect:
+                    if dx > 0:
+                        delta_x += next_rect.right - hit_rect.left
+                    else:
+                        delta_x += hit_rect.right - next_rect.left
+                    if dy > 0:
+                        delta_y += next_rect.bottom - hit_rect.top
+                    else:
+                        delta_y += hit_rect.bottom - next_rect.top
 
             if abs(delta_x - delta_y) < 10:
                 dx, dy = 0, 0
@@ -111,16 +115,19 @@ class Monster(pygame.sprite.Sprite):
         self.w_rect.center = self.x, self.y
 
     def do_animation(self):
-        if self.fire and self.weapon.can_fire():
-            if self.anim_step // 15 == self.settings['type']['F']:
-                self.anim_step = 0
-                self.stop_fire()
-                self.do_fire()
-            self.image = self.animation['f_' + str(self.anim_step // 15)]
+        if self.is_live:
+            if self.fire and self.weapon.can_fire():
+                if self.anim_step // 15 == self.settings['type']['F']:
+                    self.anim_step = 0
+                    self.stop_fire()
+                    self.do_fire()
+                self.image = self.animation['f_' + str(self.anim_step // 15)]
+            else:
+                if self.anim_step // 10 == self.settings['type'][self.anim_turn[0].upper()]:
+                    self.anim_step = 0
+                self.image = self.animation[self.anim_turn + str(self.anim_step // 10)]
         else:
-            if self.anim_step // 10 == self.settings['type'][self.anim_turn[0].upper()]:
-                self.anim_step = 0
-            self.image = self.animation[self.anim_turn + str(self.anim_step // 10)]
+            self.image = self.animation['d']
 
     def move(self, dx, dy):
         self.rect.x += dx
@@ -154,7 +161,6 @@ class Monster(pygame.sprite.Sprite):
 
     def dead(self):
         self.weapon.dead()
-        self.kill()
 
     def set_lives(self, lvl):
         pass
@@ -166,56 +172,59 @@ class Virus(Monster):
         self.m_lives = self.lives
 
     def movement(self):
-        dx = 0
-        dy = 0
+        if self.is_live:
+            dx = 0
+            dy = 0
 
-        x, y = HALF_WIDTH - self.rect.x, HALF_HEIGHT - self.rect.y
-        if abs(x) > 250:
-            if x > 0:
-                dx += enemie_speed
-            else:
-                dx -= enemie_speed
-        elif abs(x) < 100 and abs(y) < 100:
-            if x > 0:
-                dx -= enemie_speed / 2
-            else:
-                dx += enemie_speed / 2
+            x, y = HALF_WIDTH - self.rect.x, HALF_HEIGHT - self.rect.y
+            if abs(x) > 250:
+                if x > 0:
+                    dx += enemie_speed
+                else:
+                    dx -= enemie_speed
+            elif abs(x) < 100 and abs(y) < 100:
+                if x > 0:
+                    dx -= enemie_speed / 2
+                else:
+                    dx += enemie_speed / 2
 
-        if abs(y) > 250:
-            if y > 0:
-                dy += enemie_speed
-            else:
-                dy -= enemie_speed
-        elif abs(x) < 100 and abs(y) < 100:
-            if y > 0:
-                dy -= enemie_speed / 2
-            else:
-                dy += enemie_speed / 2
+            if abs(y) > 250:
+                if y > 0:
+                    dy += enemie_speed
+                else:
+                    dy -= enemie_speed
+            elif abs(x) < 100 and abs(y) < 100:
+                if y > 0:
+                    dy -= enemie_speed / 2
+                else:
+                    dy += enemie_speed / 2
 
-        if x < 600 and y < 600:
-            self.fire = True
+            if x < 600 and y < 600:
+                self.fire = True
+            else:
+                self.fire = False
+
+            self.is_empty(dx, dy)
+
+            self.w_rect.center = self.x, self.y
+
+            self.anim_step += 1
+
+            self.do_animation()
+
+            if self.rect.x <= HALF_WIDTH:
+                self.anim_turn = 'l_'
+            else:
+                self.anim_turn = 'r_'
+
+            x2, y2 = HALF_WIDTH, HALF_HEIGHT
+            x1, y1 = self.rect.x, self.rect.y
+            h = y2 - y1
+            w = x2 - x1
+            t = math.atan2(h, w)
+            self.angle = t
         else:
-            self.fire = False
-
-        self.is_empty(dx, dy)
-
-        self.w_rect.center = self.x, self.y
-
-        self.anim_step += 1
-
-        self.do_animation()
-
-        if self.rect.x <= HALF_WIDTH:
-            self.anim_turn = 'l_'
-        else:
-            self.anim_turn = 'r_'
-
-        x2, y2 = HALF_WIDTH, HALF_HEIGHT
-        x1, y1 = self.rect.x, self.rect.y
-        h = y2 - y1
-        w = x2 - x1
-        t = math.atan2(h, w)
-        self.angle = t
+            self.do_animation()
 
     @property
     def bullet_name(self):

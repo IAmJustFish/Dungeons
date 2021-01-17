@@ -9,7 +9,7 @@ class Drawer:
         self.screen = screen
         self.player = player
 
-    def draw_all(self, sprites, FPS=-1):
+    def draw_all(self, sprites, FPS=-1, pause=False):
         self.screen.fill(DARKGRAY)
 
         self.draw_world(sprites)
@@ -21,10 +21,13 @@ class Drawer:
             self.draw_FPS(FPS)
 
         if DRAW_CROSSHAIR:
-            self.draw_crosshair()
+            pygame.mouse.set_visible(False)
+            self.draw_crosshair(pygame.mouse.get_pos())
+        else:
+            pygame.mouse.set_visible(True)
 
         if DRAW_HUD:
-            self.draw_hud()
+            self.draw_hud(pause)
 
     def draw_world(self, sprites):
         sprites['floor'].draw(self.screen)
@@ -43,7 +46,7 @@ class Drawer:
         player = sprites['player'].sprites()
         enemies = sprites['enemy'].sprites()
         all = walls + player + enemies
-        all = sorted(all, key=lambda sprite: sprite.w_rect.y)
+        all = sorted(all, key=lambda sprite: sprite.rect.y)
         return all
 
     def draw_FPS(self, FPS):
@@ -78,10 +81,14 @@ class Drawer:
 
         self.screen.blit(mini_map, (WIDTH - MINI_MAP_WIDTH * MINI_MAP_SCALE / 100 * TILE, 0))
 
-    def draw_crosshair(self):
-        pass
+    def draw_crosshair(self, pos):
+        x, y = pos
+        pygame.draw.line(self.screen, BLACK, (x - CROSSHAIR_SIZE, y),
+                         (x + CROSSHAIR_SIZE, y), 1)
+        pygame.draw.line(self.screen, BLACK, (x, y - CROSSHAIR_SIZE),
+                         (x, y + CROSSHAIR_SIZE), 1)
 
-    def draw_hud(self):
+    def draw_hud(self, pause):
         c = RED
         delta_c = (c[0] - c[0] * 0.1) // self.player.m_lives
         delta = LIVES_WIDTH // self.player.m_lives
@@ -97,3 +104,7 @@ class Drawer:
             pygame.draw.line(self.screen, c, (x * delta, 0), ((x + 0) * delta, LIVES_HEIGHT), 1)
         pygame.draw.rect(self.screen, BLACK,
                          (0, 0, self.player.m_lives * delta, LIVES_HEIGHT), 1)
+
+        if pause:
+            pygame.draw.rect(self.screen, GRAY, (HALF_WIDTH - 30, HALF_HEIGHT - 60, 20, 60))
+            pygame.draw.rect(self.screen, GRAY, (HALF_WIDTH + 10, HALF_HEIGHT - 60, 20, 60))

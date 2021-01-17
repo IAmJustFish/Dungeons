@@ -3,6 +3,7 @@ import math
 import os
 from settings import *
 from Bullets import Bullet
+from random import randint
 
 
 def load_image(name, colorkey=-1):
@@ -25,7 +26,7 @@ def load_image(name, colorkey=-1):
 class Gun(pygame.sprite.Sprite):
     def __init__(self, name, groups, all_sprites, player=None):
         super().__init__(groups['weapon'])
-        self.groups = groups
+        self.my_groups = groups
         self.player = player
         self.turn = player.turn
         self.all_sprites = all_sprites
@@ -43,25 +44,30 @@ class Gun(pygame.sprite.Sprite):
         self.image = self.r_im
         self.rect = self.image.get_rect()
         self.rect.center = self.player.rect.center
-        self.time = 1
+        self.w_rect = self.image.get_rect()
+        self.w_rect.center = self.player.rect.center
+        self.time = randint(1, int(self.specifications['speed']))
 
     def fire(self):
-        if self.time % self.specifications['speed'] == 0:
+        if self.time - self.specifications['speed'] >= 0:
             self.time = 1
             dx = (self.player.x // BULLETS_SPEED + 10 * math.cos(self.player.angle) - self.player.x)\
                  * self.specifications['bullet_speed'] // BULLETS_SPEED
             dy = (self.player.y // BULLETS_SPEED + 10 * math.sin(self.player.angle) - self.player.y)\
                  * self.specifications['bullet_speed'] // BULLETS_SPEED
-            bullet = Bullet(self.groups, self.rect.center, (dx, dy)
+            bullet = Bullet(self.my_groups, self.rect.center, (dx, dy)
                             , self.specifications['damage'], self.turn, self.all_sprites, self.player.bullet_name)
 
     def update(self):
+        sx = abs(self.rect.x - HALF_WIDTH)
+        sy = abs(self.rect.y - HALF_HEIGHT)
         if self.rect.x <= HALF_WIDTH:
             self.image = self.l_im
         else:
             self.image = self.r_im
         self.rect.center = self.player.rect.center[0], self.player.rect[1] + 30
-        if self.time % self.specifications['speed'] != 0:
+        self.w_rect.center = self.rect.center
+        if sx < 300 and sy < 300:
             self.time += 1
 
     def get_player(self, player):
@@ -75,7 +81,7 @@ class Gun(pygame.sprite.Sprite):
         self.rect.y += dy
 
     def can_fire(self):
-        return self.time % self.specifications['speed'] == 0
+        return self.time - self.specifications['speed'] >= 0
 
     def hit(self, *args, **kwarks):
         return False

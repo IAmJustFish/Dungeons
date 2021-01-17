@@ -40,6 +40,75 @@ def do_3d(img_name, w, h, s_w, s_h):
     return sc
 
 
+def start_game():
+    game_unpaused = 1
+
+    # init classes
+    player_sprite = pygame.sprite.Group()
+    wall_sprites = pygame.sprite.Group()
+    floor_sprites = pygame.sprite.Group()
+    all_sprites = pygame.sprite.Group()
+    weapon_sprites = pygame.sprite.Group()
+    bullet_sprites = pygame.sprite.Group()
+    enemy_sprites = pygame.sprite.Group()
+    collision_sprites = pygame.sprite.Group()
+
+    groups_for_weapon = {'bullet': (bullet_sprites, all_sprites),
+                         'weapon': (weapon_sprites, all_sprites)}
+
+    images = dict()
+    images['W1'] = load_image(('image', 'ice_2.png'))
+    images['W2'] = load_image(('image', 'ice.png'))
+    images['floor'] = load_image(('image', 'ice_floor.png'))
+
+    sprites = {
+        'player': player_sprite,
+        'walls': wall_sprites,
+        'floor': floor_sprites,
+        'weapon': weapon_sprites,
+        'bullet': bullet_sprites,
+        'enemy': enemy_sprites,
+        'all': all_sprites
+    }
+
+    virus = {
+        'name': 'virus',
+        'R': 6,
+        'L': 6,
+        'F': 4
+    }
+
+    room = Room(lvl, (enemy_sprites, all_sprites,))
+    room.set_cells()
+    room.spawn_monsters(all_sprites, enemy_sprites, collision_sprites, monster_type=virus,
+                        weapon=('virus_sphere', groups_for_weapon), collisions=collision_sprites)
+
+    for (x, y), key in world_map.items():
+        wall = Wall(x, y, images, key, (wall_sprites, all_sprites, collision_sprites))
+    for j, row in enumerate(text_map):
+        for i in range(len(row)):
+            x, y = i * TILE, j * TILE + TILE / 2
+            floor = Floor(x, y, images, (floor_sprites, all_sprites))
+            if row[i] == 'pl':
+                player = Player(player_sprite, all_sprites, collision_sprites,
+                                imr=[load_image(('sprites', 'player', 'R', f'{i}.png'), colorkey=-1) for i in
+                                     range(7)],
+                                iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in
+                                     range(7)],
+                                weapon=('mp5', groups_for_weapon), all_sprites=collision_sprites,
+                                player_pos=(x + TILE / 2, y), collisions=collision_sprites)
+            elif row[i] == 'e1':
+                VM = Virus(all_sprites, enemy_sprites, collision_sprites, lvl=1, monster_type=virus,
+                           pos=(x + TILE / 2, y), weapon=('virus_sphere', groups_for_weapon),
+                           collisions=collision_sprites)
+
+    drawer = Drawer(game_surface, player)
+    camera = Camera(player)
+    return camera, drawer, player, sprites, room, virus, groups_for_weapon, \
+           player_sprite, wall_sprites, floor_sprites, all_sprites, weapon_sprites, \
+           bullet_sprites, enemy_sprites, collision_sprites
+
+
 if __name__ == "__main__":
     pygame.init()
 
@@ -92,6 +161,7 @@ if __name__ == "__main__":
         #init window
         pygame.display.set_caption('Dungeon game')
         game_surface = pygame.display.set_mode((WIDTH, HEIGHT))
+
         game_unpaused = 1
 
         # init classes
@@ -129,6 +199,11 @@ if __name__ == "__main__":
             'F': 4
         }
 
+        room = Room(1, (enemy_sprites, all_sprites,))
+        room.set_cells()
+        room.spawn_monsters(all_sprites, enemy_sprites, collision_sprites, monster_type=virus,
+                            weapon=('virus_sphere', groups_for_weapon), collisions=collision_sprites)
+
         for (x, y), key in world_map.items():
             wall = Wall(x, y, images, key, (wall_sprites, all_sprites, collision_sprites))
         for j, row in enumerate(text_map):
@@ -142,15 +217,16 @@ if __name__ == "__main__":
                                     iml=[load_image(('sprites', 'player', 'L', f'{i}.png'), colorkey=-1) for i in
                                          range(7)],
                                     weapon=('mp5', groups_for_weapon), all_sprites=collision_sprites,
-                                    player_pos=(x, y))
+                                    player_pos=(x + TILE / 2, y), collisions=collision_sprites)
                 elif row[i] == 'e1':
                     VM = Virus(all_sprites, enemy_sprites, collision_sprites, lvl=1, monster_type=virus,
-                               pos=(x, y), weapon=('virus_sphere', groups_for_weapon))
+                               pos=(x + TILE / 2, y), weapon=('virus_sphere', groups_for_weapon),
+                               collisions=collision_sprites)
 
         drawer = Drawer(game_surface, player)
         camera = Camera(player)
-        room = Room(text_map, (enemy_sprites, all_sprites), 1)
-        room.spawn_monsters()
+
+        lvl = 1
 
         while game_running:
             for event in pygame.event.get():
@@ -171,16 +247,24 @@ if __name__ == "__main__":
                 all_sprites.update()
 
                 if room.is_clear():
-                    room = Room(text_map, (enemy_sprites, all_sprites), 1)
-                    for sprite in enemy_sprites.sprites():
-                        sprite.kill()
+                    all_sprites.empty()
+                    player_sprite.empty()
+                    wall_sprites.empty()
+                    floor_sprites.empty()
+                    weapon_sprites.empty()
+                    bullet_sprites.empty()
+                    enemy_sprites.empty()
+                    text_map.clear()
+                    lvl += 1
+                    camera, drawer, player, sprites, room, virus, groups_for_weapon, \
+                    player_sprite, wall_sprites, floor_sprites, all_sprites, weapon_sprites, \
+                    bullet_sprites, enemy_sprites, collision_sprites = start_game()
 
                 if game_running:
                     if not player.is_live:
                         game_running = False
 
-            drawer.draw_all(sprites, FPS=clock.get_fps())
-
+            drawer.draw_all(sprites, FPS=clock.get_fps(), pause=not game_unpaused)
             pygame.display.flip()
             clock.tick(144)
 

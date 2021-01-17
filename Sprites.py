@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from map import walls_collision
 
 
 class Wall(pygame.sprite.Sprite):
@@ -7,7 +8,8 @@ class Wall(pygame.sprite.Sprite):
         super().__init__(*groups)
         self.image = pygame.transform.scale(images[key], (TILE, TILE + SHADOW_TEXTURE_H // TEXTURE_SCALE))
         self.rect = self.image.get_rect().move(x, y)
-        self.w_rect = self.image.get_rect().move(x, y)
+        self.w_rect = pygame.rect.Rect(x, y, TILE, TILE).move(x, y)
+        walls_collision.append(self.w_rect)
 
     def move(self, dx, dy):
         self.rect.x += dx

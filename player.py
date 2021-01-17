@@ -6,7 +6,7 @@ from Guns import Gun
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, *groups, imr, iml, weapon, all_sprites, player_pos):
+    def __init__(self, *groups, imr, iml, weapon, all_sprites, player_pos, collisions):
         super().__init__(*groups)
 
         self.fire = False
@@ -40,6 +40,8 @@ class Player(pygame.sprite.Sprite):
         self.w_rect = pygame.rect.Rect(self.x, self.y, self.image.get_width(), self.image.get_height() // 2)
         self.w_rect.center = player_pos
 
+        walls_collision.append(self.w_rect)
+
         self.all_sprites = all_sprites
         self.weapon = Gun(weapon[0], weapon[1], all_sprites, player=self)
 
@@ -59,18 +61,19 @@ class Player(pygame.sprite.Sprite):
         next_rect = self.w_rect.move(dx, dy)
         hit_indexes = next_rect.collidelistall(walls_collision)
 
-        if len(hit_indexes):
+        if len(hit_indexes) > 1:
             delta_x, delta_y = 0, 0
             for hit_index in hit_indexes:
                 hit_rect = walls_collision[hit_index]
-                if dx > 0:
-                    delta_x += next_rect.right - hit_rect.left
-                else:
-                    delta_x += hit_rect.right - next_rect.left
-                if dy > 0:
-                    delta_y += next_rect.bottom - hit_rect.top
-                else:
-                    delta_y += hit_rect.bottom - next_rect.top
+                if hit_rect != self.w_rect:
+                    if dx > 0:
+                        delta_x += next_rect.right - hit_rect.left
+                    else:
+                        delta_x += hit_rect.right - next_rect.left
+                    if dy > 0:
+                        delta_y += next_rect.bottom - hit_rect.top
+                    else:
+                        delta_y += hit_rect.bottom - next_rect.top
 
             if abs(delta_x - delta_y) < 10:
                 dx, dy = 0, 0
