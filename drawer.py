@@ -5,14 +5,17 @@ from map import *
 
 
 class Drawer:
-    def __init__(self, screen, player):
+    def __init__(self, screen, player, lvl=1):
         self.screen = screen
         self.player = player
+        self.lvl = lvl
 
-    def draw_all(self, sprites, FPS=-1, pause=False):
+    def draw_all(self, sprites, pause, FPS=-1):
         self.screen.fill(DARKGRAY)
 
         self.draw_world(sprites)
+
+        self.draw_lvl()
 
         if DRAW_MINI_MAP:
             self.draw_mini_map()
@@ -50,9 +53,15 @@ class Drawer:
         return all
 
     def draw_FPS(self, FPS):
-        f1 = pygame.font.Font(None, 50)
-        text1 = f1.render(str(int(FPS)), True,
+        f1 = pygame.font.Font(None, 20)
+        text1 = f1.render(f'FPS - {str(int(FPS))}', True,
                           (180, 0, 0))
+        self.screen.blit(text1, (WIDTH - 100, 20))
+
+    def draw_lvl(self):
+        f1 = pygame.font.Font(None, 50)
+        text1 = f1.render(f'level - {str(int(self.lvl))}', True,
+                          BLUE)
         self.screen.blit(text1, (50, 50))
 
     def draw_mini_map(self):
@@ -105,6 +114,12 @@ class Drawer:
         pygame.draw.rect(self.screen, BLACK,
                          (0, 0, self.player.m_lives * delta, LIVES_HEIGHT), 1)
 
-        if pause:
-            pygame.draw.rect(self.screen, GRAY, (HALF_WIDTH - 30, HALF_HEIGHT - 60, 20, 60))
-            pygame.draw.rect(self.screen, GRAY, (HALF_WIDTH + 10, HALF_HEIGHT - 60, 20, 60))
+        if pause[0]:
+            if pause[1] == 'pause':
+                pygame.draw.rect(self.screen, GRAY, (HALF_WIDTH - 30, HALF_HEIGHT - 60, 20, 60))
+                pygame.draw.rect(self.screen, GRAY, (HALF_WIDTH + 10, HALF_HEIGHT - 60, 20, 60))
+            else:
+                f1 = pygame.font.Font(None, 100)
+                text1 = f1.render(f'{pause[1]}', True,
+                                  GREEN)
+                self.screen.blit(text1, (HALF_WIDTH - 250, HALF_HEIGHT - 25))

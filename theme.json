@@ -3,10 +3,10 @@
     {
         "colours":
         {
-            "normal_bg":"#45494e",
+            "normal_bg":"#660066",
             "hovered_bg":"#35393e",
             "disabled_bg":"#25292e",
-            "selected_bg":"#193754",
+            "selected_bg":"#990066",
             "dark_bg":"#15191e",
             "normal_text":"#c5cbd8",
             "hovered_text":"#FFFFFF",
@@ -23,25 +23,6 @@
             "active_border": "#8080B0",
             "filled_bar":"#f4251b",
             "unfilled_bar":"#CCCCCC"
-        }
-    },
-
-    "sound_button":
-    {
-        "image":
-        {
-            "normal_image": {
-                "path": "нота.png"
-            },
-            "hovered_image": {
-                "path": "нота.png"
-            },
-            "selected_image": {
-                "path": "нота.png"
-            },
-            "disabled_image": {
-                "path": "нота.png"
-            }
         }
     }
 }

@@ -102,7 +102,7 @@ def start_game():
                            pos=(x + TILE / 2, y), weapon=('virus_sphere', groups_for_weapon),
                            collisions=collision_sprites)
 
-    drawer = Drawer(game_surface, player)
+    drawer = Drawer(game_surface, player, lvl=lvl)
     camera = Camera(player)
     return camera, drawer, player, sprites, room, virus, groups_for_weapon, \
            player_sprite, wall_sprites, floor_sprites, all_sprites, weapon_sprites, \
@@ -111,26 +111,38 @@ def start_game():
 
 if __name__ == "__main__":
     pygame.init()
+    pygame.mixer.init()
+
+    music['p_f'] = pygame.mixer.Sound(os.path.join('data', 'music', 'player', '0.mp3'))
+    music['p_f'].set_volume(0.05)
+    music['v_f'] = pygame.mixer.Sound(os.path.join('data', 'music', 'monster', '0.mp3'))
+    music['v_f'].set_volume(0.05)
+    music['fon'] = pygame.mixer.Sound(os.path.join('data', 'music', 'fon', '0.ogg'))
+    pygame.mixer.music.load(os.path.join('data', 'music', 'fon', '0.ogg'))
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play(loops=-1)
 
     pygame.display.set_caption('Dungeon menu')
     menu_surface = pygame.display.set_mode((WIDTH, HEIGHT))
     background = pygame.Surface(((WIDTH, HEIGHT)))
-    background.fill(BLACK)
-    pygame.draw.line(background, (128, 128, 128), (0, 100), (WIDTH, 100), 150)
-    pygame.draw.line(background, (128, 128, 128), (400, 100), (500, HEIGHT), 150)
-    pygame.draw.line(background, (128, 128, 128), (900, 100), (800, HEIGHT), 150)
     main = pygame_gui.UIManager((WIDTH, HEIGHT), "theme.json")
 
-    play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((409, 278), (487, 134)), text="Start",
+    play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((HALF_WIDTH - PLAY_BTN_WIDTH // 2,
+                                                                          HALF_HEIGHT - PLAY_BTN_HEIGHT // 2),
+                                                                         (PLAY_BTN_WIDTH, PLAY_BTN_HEIGHT)),
+                                               text="Start",
                                                manager=main)
-    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1050, 600), (230, 110)), text="",
+    sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((WIDTH - SOUND_BTN_WIDTH,
+                                                                           HEIGHT - SOUND_BTN_HEIGHT),
+                                                                          (SOUND_BTN_WIDTH, SOUND_BTN_HEIGHT)),
+                                                text="sound",
                                                 manager=main)
-    settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1, 600), (230, 110)), text="settings",
-                                                   manager=main)
 
     clock = pygame.time.Clock()
     running = True
     game_running = False
+
+    background = load_image(('image', 'background.png'))
 
     while running:
         time_delta = clock.tick(144) / 1000
@@ -143,9 +155,13 @@ if __name__ == "__main__":
                         running = False
                         game_running = True
                     if event.ui_element == sound_button:
-                        pass
-                    if event.ui_element == settings_button:
-                        pass
+                        play_music += 1
+                        play_music %= 2
+                        if play_music:
+                            pygame.mixer.music.play(loops=-1)
+                        else:
+                            pygame.mixer.music.stop()
+
 
             main.process_events(event)
 
@@ -162,7 +178,7 @@ if __name__ == "__main__":
         pygame.display.set_caption('Dungeon game')
         game_surface = pygame.display.set_mode((WIDTH, HEIGHT))
 
-        game_unpaused = 1
+        game_unpaused = 1, 'pause'
 
         # init classes
         player_sprite = pygame.sprite.Group()
@@ -223,10 +239,10 @@ if __name__ == "__main__":
                                pos=(x + TILE / 2, y), weapon=('virus_sphere', groups_for_weapon),
                                collisions=collision_sprites)
 
-        drawer = Drawer(game_surface, player)
-        camera = Camera(player)
-
         lvl = 1
+
+        drawer = Drawer(game_surface, player, lvl=lvl)
+        camera = Camera(player)
 
         while game_running:
             for event in pygame.event.get():
@@ -236,14 +252,14 @@ if __name__ == "__main__":
                     if event.key == pygame.K_ESCAPE:
                         exit()
                     if event.key == pygame.K_SPACE:
-                        game_unpaused = (game_unpaused + 1) % 2
+                        game_unpaused = (game_unpaused[0] + 1) % 2, game_unpaused[1]
+                        if game_unpaused[1] == 'level complete!':
+                            game_unpaused = game_unpaused[0], 'pause'
                 if event.type == pygame.MOUSEBUTTONDOWN and game_unpaused:
                     player.start_fire()
                 if event.type == pygame.MOUSEBUTTONUP and game_unpaused:
                     player.stop_fire()
-            if game_unpaused:
-                camera.update()
-                camera.apply(all_sprites)
+            if game_unpaused[0]:
                 all_sprites.update()
 
                 if room.is_clear():
@@ -259,12 +275,36 @@ if __name__ == "__main__":
                     camera, drawer, player, sprites, room, virus, groups_for_weapon, \
                     player_sprite, wall_sprites, floor_sprites, all_sprites, weapon_sprites, \
                     bullet_sprites, enemy_sprites, collision_sprites = start_game()
+                    game_unpaused = 0, 'level complete!'
 
                 if game_running:
                     if not player.is_live:
                         game_running = False
 
-            drawer.draw_all(sprites, FPS=clock.get_fps(), pause=not game_unpaused)
+            pause = not game_unpaused[0], game_unpaused[1]
+
+            camera.update()
+            camera.apply(all_sprites)
+
+            drawer.draw_all(sprites, pause, FPS=clock.get_fps())
+            pygame.display.flip()
+            clock.tick(144)
+        game_running = True
+        end_menu = load_image(('image', 'game_over.png'))
+
+        while game_running:
+            game_surface.fill(WHITE)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
+            game_surface.blit(end_menu, (0, 0))
+            f1 = pygame.font.Font(None, 100)
+            text1 = f1.render(f'scores: {int(lvl / 3 * 50)}', True,
+                              BLACK)
+            game_surface.blit(text1, (HALF_WIDTH - 200, 200))
             pygame.display.flip()
             clock.tick(144)
 

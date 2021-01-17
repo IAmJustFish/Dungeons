@@ -50,6 +50,11 @@ class Gun(pygame.sprite.Sprite):
 
     def fire(self):
         if self.time - self.specifications['speed'] >= 0:
+            if play_music:
+                if self.turn == 'player':
+                    music['p_f'].play()
+                else:
+                    music['v_f'].play()
             self.time = 1
             dx = (self.player.x // BULLETS_SPEED + 10 * math.cos(self.player.angle) - self.player.x)\
                  * self.specifications['bullet_speed'] // BULLETS_SPEED

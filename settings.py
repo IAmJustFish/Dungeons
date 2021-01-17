@@ -7,6 +7,12 @@ HEIGHT = 865
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
 
+# buttons settings
+PLAY_BTN_WIDTH = 200
+PLAY_BTN_HEIGHT = 100
+SOUND_BTN_WIDTH = 50
+SOUND_BTN_HEIGHT = 50
+
 # game
 TILE = 50
 SHOW_FPS = True
@@ -51,3 +57,7 @@ TEXTURE_SCALE = TEXTURE_W // TILE
 
 # enemies
 enemie_speed = 2
+
+# music
+music = dict()
+play_music = 1
