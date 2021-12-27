@@ -7,7 +7,7 @@ https://www.youtube.com/watch?v=f0nokxXaLjY&feature=youtu.be
 
 
 Class Bullets(pygame.sptite):
-	def init(start, vector, damege, speed, IsPlayerBellet=False):
+	def init(start, vector, damege, speed, IsPlayerBullet=False):
 	#
 	def dead():
 	#
@@ -83,7 +83,7 @@ File settings:
 
 File drawer:
 -draw all
--draw GUI?
+-draw GUI
 
 File map:
 -have info of level(sprites, walls...)
